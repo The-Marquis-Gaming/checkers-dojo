@@ -31,14 +31,11 @@ mod tests {
         let mut world = spawn_test_world([ndef].span());
 
         // Test initial piece
-        // Todo: fix this test, bug in read_model?
-        // let piece77_vec = Vec2 { x: 7, y: 7 };
-        // let mut piece00: Piece = world.read_model((caller, piece77_vec));
-        // println!("piece00.vec.x: {}", piece00.vec.x);
-        // println!("piece00.vec.y: {}", piece00.vec.y);
-        // assert(piece00.vec.x == 0 && piece00.vec.y == 0, 'initial piece wrong');
-        // Test write_model_test
+        let piece_position_77 = Position { raw: 7, col: 7 };
+        let piece: Piece = world.read_model((caller, piece_position_77));
+        assert(piece.is_alive == false, 'initial piece wrong');
 
+        // Test write_model_test
         let piece_vec = Position { raw: 1, col: 1 };
         let piece = Piece { player: caller, position: piece_vec, is_king: true, is_alive: true };
 
