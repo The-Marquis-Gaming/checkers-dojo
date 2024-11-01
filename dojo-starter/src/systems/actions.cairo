@@ -6,7 +6,7 @@ use dojo_starter::models::Position;
 trait IActions<T> {
     fn spawn(ref self: T);
     fn can_choose_piece(ref self: T, coordinates_position: Position) -> bool;
-    fn move_piece(ref self: T, coordinates_position: Position);
+    fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Position);
 }
 
 // dojo decorator
@@ -98,9 +98,14 @@ pub mod actions {
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
 
+            // Check is current position is valid
+            let is_valid_position = self.check_is_valid_position(coordinates_position);
+            if !is_valid_position {
+                return false;
+            }
+
             // Get the player's piece from the world by its coordinates.
             let piece: Piece = world.read_model((player, coordinates_position));
-            println!("piece: {:?}", piece);
 
             // Check if the piece belongs to the player and is alive.
             let is_valid_piece = piece.position.raw == coordinates_position.raw
@@ -109,31 +114,35 @@ pub mod actions {
 
             // Only check for valid moves if the piece is valid
             if is_valid_piece {
-                println!("checking valid moves");
-                self.check_valid_moves(piece)
+                self.check_has_valid_moves(piece)
             } else {
                 false
             }
         }
 
         // Implementation of the move function for the ContractState struct.
-        fn move_piece(ref self: ContractState, coordinates_position: Position) {
+        fn move_piece(
+            ref self: ContractState, current_piece: Piece, new_coordinates_position: Position
+        ) {
             // Get the address of the current caller, possibly the player's address.
 
             let mut world = self.world_default();
-
             let player = get_caller_address();
 
+            // Check is new position is valid
+            let is_valid_position = self.check_is_valid_position(new_coordinates_position);
+            assert(is_valid_position, 'Invalid position');
+
             // Retrieve the player's piece from the world by its coordinates.
-            let mut piece: Piece = world.read_model((player, coordinates_position));
+            let square: Piece = world.read_model((player, new_coordinates_position));
 
             // Update the piece's position based on the new coordinates.
-            let updated_piece = update_piece_position(piece, coordinates_position);
+            let updated_piece = update_piece_position(current_piece, square);
 
             // Write the new position to the world.
             world.write_model(@updated_piece);
             // Emit an event to the world to notify about the player's move.
-            world.emit_event(@Moved { player, position: coordinates_position });
+            world.emit_event(@Moved { player, position: new_coordinates_position });
         }
     }
     #[generate_trait]
@@ -145,8 +154,7 @@ pub mod actions {
             self.world(@"dojo_starter")
         }
 
-        // Add world parameter to access game state
-        fn check_valid_moves(self: @ContractState, piece: Piece) -> bool {
+        fn check_has_valid_moves(self: @ContractState, piece: Piece) -> bool {
             let world = self.world_default();
 
             let piece_raw = piece.position.raw;
@@ -174,7 +182,6 @@ pub mod actions {
                     // then the square is empty and the move is valid
                     let target_down_left_square: Piece = world
                         .read_model((piece.player, target_down_left_position));
-                    println!("target_square: {:?}", target_down_left_square);
                     // If the target square is empty, return true
                     if target_down_left_square.is_alive == false {
                         // assert target raw is not out of bounds
@@ -197,12 +204,32 @@ pub mod actions {
             // If it's a king piece (not implemented yet)
             false
         }
+
+        fn check_is_valid_position(self: @ContractState, position: Position) -> bool {
+            let raw = position.raw;
+            let col = position.col;
+            if raw < 8 && col < 8 {
+                // Check if the position is valid on the board setup
+                match raw {
+                    0 => col == 1 || col == 3 || col == 5 || col == 7,
+                    1 => col == 0 || col == 2 || col == 4 || col == 6,
+                    2 => col == 1 || col == 3 || col == 5 || col == 7,
+                    3 => col == 0 || col == 2 || col == 4 || col == 6,
+                    4 => col == 1 || col == 3 || col == 5 || col == 7,
+                    5 => col == 0 || col == 2 || col == 4 || col == 6,
+                    6 => col == 1 || col == 3 || col == 5 || col == 7,
+                    7 => col == 0 || col == 2 || col == 4 || col == 6,
+                    _ => false,
+                }
+            } else {
+                false
+            }
+        }
     }
 }
 // Todo: Improve this function to check if the new position is valid.
-fn update_piece_position(mut piece: Piece, coordinates_position: Position) -> Piece {
-    piece.position.raw = coordinates_position.raw;
-    piece.position.col = coordinates_position.col;
-    piece.is_alive = true;
-    return piece;
+fn update_piece_position(mut piece: Piece, square: Piece) -> Piece {
+    piece.position.raw = square.position.raw;
+    piece.position.col = square.position.col;
+    piece
 }
