@@ -182,7 +182,7 @@ mod tests {
     // Test can choose piece but can not move
     #[test]
     #[should_panic(expected: ('Invalid position', 'ENTRYPOINT_FAILED'))]
-    fn test_can_not_move_piece() {
+    fn test_move_piece31_forward_straight_fails() {
         let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
@@ -201,6 +201,29 @@ mod tests {
         let new_coordinates_position = Position { raw: 3, col: 1 };
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
+
+    #[test]
+    #[should_panic(expected: ('Invalid position', 'ENTRYPOINT_FAILED'))]
+    fn test_move_piece37_forward_right_fails() {
+        let caller = starknet::contract_address_const::<0x0>();
+
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+
+        actions_system.spawn();
+        let valid_piece_position = Position { raw: 2, col: 7 };
+
+        let can_choose_piece = actions_system.can_choose_piece(valid_piece_position);
+        assert(can_choose_piece, 'can_choose_piece failed');
+
+        let current_piece = world.read_model((caller, valid_piece_position));
+        let new_coordinates_position = Position { raw: 3, col: 8 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+    }
+
     #[test]
     fn test_move_piece21_down_left() {
         let caller = starknet::contract_address_const::<0x0>();

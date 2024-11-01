@@ -4,7 +4,7 @@ use dojo_starter::models::Position;
 // define the interface
 #[starknet::interface]
 trait IActions<T> {
-    fn spawn(ref self: T);
+    fn spawn(ref self: T) -> Span<Position>;
     fn can_choose_piece(ref self: T, coordinates_position: Position) -> bool;
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Position);
 }
@@ -29,7 +29,7 @@ pub mod actions {
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
-        fn spawn(ref self: ContractState) {
+        fn spawn(ref self: ContractState) -> Span<Position> {
             // Get the default world.
             let mut world = self.world_default();
 
@@ -39,42 +39,30 @@ pub mod actions {
             // Update the world state with the new data.
 
             // Create the pieces for the player. Upper side of the board.
-            let piece01 = Piece {
-                player, position: Position { raw: 0, col: 1 }, is_king: false, is_alive: true
-            };
-            let piece03 = Piece {
-                player, position: Position { raw: 0, col: 3 }, is_king: false, is_alive: true
-            };
-            let piece05 = Piece {
-                player, position: Position { raw: 0, col: 5 }, is_king: false, is_alive: true
-            };
-            let piece07 = Piece {
-                player, position: Position { raw: 0, col: 7 }, is_king: false, is_alive: true
-            };
-            let piece10 = Piece {
-                player, position: Position { raw: 1, col: 0 }, is_king: false, is_alive: true
-            };
-            let piece12 = Piece {
-                player, position: Position { raw: 1, col: 2 }, is_king: false, is_alive: true
-            };
-            let piece14 = Piece {
-                player, position: Position { raw: 1, col: 4 }, is_king: false, is_alive: true
-            };
-            let piece16 = Piece {
-                player, position: Position { raw: 1, col: 6 }, is_king: false, is_alive: true
-            };
-            let piece21 = Piece {
-                player, position: Position { raw: 2, col: 1 }, is_king: false, is_alive: true
-            };
-            let piece23 = Piece {
-                player, position: Position { raw: 2, col: 3 }, is_king: false, is_alive: true
-            };
-            let piece25 = Piece {
-                player, position: Position { raw: 2, col: 5 }, is_king: false, is_alive: true
-            };
-            let piece27 = Piece {
-                player, position: Position { raw: 2, col: 7 }, is_king: false, is_alive: true
-            };
+            let position01 = Position { raw: 0, col: 1 };
+            let piece01 = Piece { player, position: position01, is_king: false, is_alive: true };
+            let position03 = Position { raw: 0, col: 3 };
+            let piece03 = Piece { player, position: position03, is_king: false, is_alive: true };
+            let position05 = Position { raw: 0, col: 5 };
+            let piece05 = Piece { player, position: position05, is_king: false, is_alive: true };
+            let position07 = Position { raw: 0, col: 7 };
+            let piece07 = Piece { player, position: position07, is_king: false, is_alive: true };
+            let position10 = Position { raw: 1, col: 0 };
+            let piece10 = Piece { player, position: position10, is_king: false, is_alive: true };
+            let position12 = Position { raw: 1, col: 2 };
+            let piece12 = Piece { player, position: position12, is_king: false, is_alive: true };
+            let position14 = Position { raw: 1, col: 4 };
+            let piece14 = Piece { player, position: position14, is_king: false, is_alive: true };
+            let position16 = Position { raw: 1, col: 6 };
+            let piece16 = Piece { player, position: position16, is_king: false, is_alive: true };
+            let position21 = Position { raw: 2, col: 1 };
+            let piece21 = Piece { player, position: position21, is_king: false, is_alive: true };
+            let position23 = Position { raw: 2, col: 3 };
+            let piece23 = Piece { player, position: position23, is_king: false, is_alive: true };
+            let position25 = Position { raw: 2, col: 5 };
+            let piece25 = Piece { player, position: position25, is_king: false, is_alive: true };
+            let position27 = Position { raw: 2, col: 7 };
+            let piece27 = Piece { player, position: position27, is_king: false, is_alive: true };
 
             // Write the new position to the world.
             world.write_model(@piece01);
@@ -89,6 +77,20 @@ pub mod actions {
             world.write_model(@piece23);
             world.write_model(@piece25);
             world.write_model(@piece27);
+
+            // Return the positions of the pieces
+            [
+                position01,
+                position03,
+                position05,
+                position07,
+                position10,
+                position12,
+                position14,
+                position16,
+                position21,
+                position23,
+            ].span()
         }
         //
 
