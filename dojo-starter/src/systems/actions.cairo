@@ -64,7 +64,7 @@ pub mod actions {
             let position27 = Position { raw: 2, col: 7 };
             let piece27 = Piece { player, position: position27, is_king: false, is_alive: true };
 
-            // Write the new position to the world.
+            // Write the upper pieces to the world.
             world.write_model(@piece01);
             world.write_model(@piece03);
             world.write_model(@piece05);
@@ -78,6 +78,48 @@ pub mod actions {
             world.write_model(@piece25);
             world.write_model(@piece27);
 
+            // Important: For now we will use the same player for all the pieces.
+
+            // Create the pieces for the player. Lower side of the board.
+            let position50 = Position { raw: 5, col: 0 };
+            let piece50 = Piece { player, position: position50, is_king: false, is_alive: true };
+            let position52 = Position { raw: 5, col: 2 };
+            let piece52 = Piece { player, position: position52, is_king: false, is_alive: true };
+            let position54 = Position { raw: 5, col: 4 };
+            let piece54 = Piece { player, position: position54, is_king: false, is_alive: true };
+            let position56 = Position { raw: 5, col: 6 };
+            let piece56 = Piece { player, position: position56, is_king: false, is_alive: true };
+            let position61 = Position { raw: 6, col: 1 };
+            let piece61 = Piece { player, position: position61, is_king: false, is_alive: true };
+            let position63 = Position { raw: 6, col: 3 };
+            let piece63 = Piece { player, position: position63, is_king: false, is_alive: true };
+            let position65 = Position { raw: 6, col: 5 };
+            let piece65 = Piece { player, position: position65, is_king: false, is_alive: true };
+            let position67 = Position { raw: 6, col: 7 };
+            let piece67 = Piece { player, position: position67, is_king: false, is_alive: true };
+            let position70 = Position { raw: 7, col: 0 };
+            let piece70 = Piece { player, position: position70, is_king: false, is_alive: true };
+            let position72 = Position { raw: 7, col: 2 };
+            let piece72 = Piece { player, position: position72, is_king: false, is_alive: true };
+            let position74 = Position { raw: 7, col: 4 };
+            let piece74 = Piece { player, position: position74, is_king: false, is_alive: true };
+            let position76 = Position { raw: 7, col: 6 };
+            let piece76 = Piece { player, position: position76, is_king: false, is_alive: true };
+
+            // Write the lower pieces to the world.
+            world.write_model(@piece50);
+            world.write_model(@piece52);
+            world.write_model(@piece54);
+            world.write_model(@piece56);
+            world.write_model(@piece61);
+            world.write_model(@piece63);
+            world.write_model(@piece65);
+            world.write_model(@piece67);
+            world.write_model(@piece70);
+            world.write_model(@piece72);
+            world.write_model(@piece74);
+            world.write_model(@piece76);
+
             // Return the positions of the pieces
             [
                 position01,
@@ -90,6 +132,20 @@ pub mod actions {
                 position16,
                 position21,
                 position23,
+                position25,
+                position27,
+                position50,
+                position52,
+                position54,
+                position56,
+                position61,
+                position63,
+                position65,
+                position67,
+                position70,
+                position72,
+                position74,
+                position76,
             ].span()
         }
         //

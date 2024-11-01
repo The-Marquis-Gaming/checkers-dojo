@@ -61,7 +61,8 @@ mod tests {
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
 
-        actions_system.spawn();
+        let pieces = actions_system.spawn();
+        assert(pieces.len() == 24, 'wrong number of pieces');
 
         // test first row
         let invalid_piece_position00 = Position { raw: 0, col: 0 }; // Empty square
