@@ -162,6 +162,10 @@ pub mod actions {
 
                 // Check forward-left diagonal (down-left)
                 if piece_col > 0 {
+                    // assert target raw is not out of bounds
+                    assert(piece_raw + 1 < 8, ' target raw is out of bounds');
+                    // assert target col is not out of bounds
+                    assert(piece_col - 1 >= 0, 'target col is out of bounds');
                     let target_down_left_position = Position {
                         raw: piece_raw + 1, col: piece_col - 1
                     };
@@ -173,6 +177,11 @@ pub mod actions {
                     println!("target_square: {:?}", target_down_left_square);
                     // If the target square is empty, return true
                     if target_down_left_square.is_alive == false {
+                        // assert target raw is not out of bounds
+                        assert(piece_raw + 1 < 8, 'target raw is out of bounds');
+                        // assert target col is not out of bounds
+                        assert(piece_col - 1 >= 0, 'target col is out of bounds');
+
                         let target_down_right_position = Position {
                             raw: piece_raw + 1, col: piece_col + 1
                         };
