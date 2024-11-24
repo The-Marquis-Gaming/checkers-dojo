@@ -41,18 +41,25 @@ pub struct Player {
 pub struct Counter {
     #[key]
     pub global_key: felt252,
-    pub nonce: u64
+    value: u64
 }
-
 
 #[generate_trait]
 impl CounterImpl of CounterTrait {
-    fn uuid(ref self: Counter) -> u64 {
+    fn get_value(self: Counter) -> u64 {
+        self.value
+    }
 
-        let id = self.nonce;
+    fn increment(ref self: Counter) -> () {
+        self.value += 1;
+    }
 
-        self.nonce += 1;
-        id
+    fn decrement(ref self: Counter) -> () {
+        self.value -= 1;
+    }
+
+    fn reset(ref self: Counter) -> () {
+        self.value = 0;
     }
 }
 
