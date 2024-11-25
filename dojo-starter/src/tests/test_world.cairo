@@ -6,7 +6,7 @@ mod tests {
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
     use dojo_starter::models::{
-        Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player
+        Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player, Counter, m_Counter
     };
 
     fn namespace_def() -> NamespaceDef {
@@ -15,6 +15,7 @@ mod tests {
                 TestResource::Model(m_Piece::TEST_CLASS_HASH),
                 TestResource::Model(m_Session::TEST_CLASS_HASH),
                 TestResource::Model(m_Player::TEST_CLASS_HASH),
+                TestResource::Model(m_Counter::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_Moved::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_Killed::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
