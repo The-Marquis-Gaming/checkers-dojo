@@ -1066,4 +1066,40 @@ mod tests {
         let final_counter: Counter = world.read_model((counter_key));
         assert(final_counter.get_value() == 0, 'reset failed');
     }
+
+    #[test]
+    fn test_session_id() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+
+        // Create multiple lobbies
+        let session_id1 = actions_system.create_lobby();
+        let retrieved_session_id1 = actions_system.get_session_id();
+
+        let session_id2 = actions_system.create_lobby();
+        let retrieved_session_id2 = actions_system.get_session_id();
+
+        let session_id3 = actions_system.create_lobby();
+        let retrieved_session_id3 = actions_system.get_session_id();
+
+        // Verify each session_id
+        let session1: Session = world.read_model((session_id1));
+        assert(session1.session_id == session_id1, 'wrong session_id for lobby 1');
+
+        let session2: Session = world.read_model((session_id2));
+        assert(session2.session_id == session_id2, 'wrong session_id for lobby 2');
+
+        let session3: Session = world.read_model((session_id3));
+        assert(session3.session_id == session_id3, 'wrong session_id for lobby 3');
+
+        assert(retrieved_session_id1 == session_id1, 'get_session_id failed lobby 1');
+
+        assert(retrieved_session_id2 == session_id2, 'get_session_id failed lobby 2');
+
+        assert(retrieved_session_id3 == session_id3, 'get_session_id failed lobby 3');
+    }
 }
