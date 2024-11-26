@@ -65,14 +65,15 @@ pub mod actions {
         fn create_lobby(ref self: ContractState) -> u64 {
             let mut world = self.world_default();
             let player = get_caller_address();
-            // let mut counter: Counter = world.read_model(0);
+            // Get or create counter
+            let mut session_counter: Counter = world.read_model(('id',));
+            let session_id = session_counter.get_value();
+            session_counter.increment();
+            // Write the counter back to the world
+            world.write_model(@session_counter);
 
-            // TODO: Fix counter for production
-            // let _id = counter.uuid();
-            // world.write_model(@counter);
-            // TODO: Refactor the session_id for production
             let session = Session {
-                session_id: 0,
+                session_id,
                 player_1: player,
                 player_2: starknet::contract_address_const::<0x0>(),
                 turn: 0,
@@ -80,12 +81,13 @@ pub mod actions {
                 state: 0,
             };
             world.write_model(@session);
+            
             // Initialize the pieces for the session
-            self.initialize_pieces_session_id(session.session_id);
+            self.initialize_pieces_session_id(session_id);
             // Spawn the pieces for the player
-            self.spawn(player, Position::Up, session.session_id);
+            self.spawn(player, Position::Up, session_id);
 
-            0
+            session_id
         }
 
         fn join_lobby(ref self: ContractState, session_id: u64) {
@@ -171,10 +173,10 @@ pub mod actions {
 
         //Getter function
         fn get_session_id(self: @ContractState) -> u64 {
-            let mut world = self.world_default();
-            let counter: Counter = world.read_model((0));
+            let world = self.world_default();
+            let session_counter: Counter = world.read_model(('id',));
 
-            counter.nonce - 1
+            session_counter.get_value() - 1
         }
     }
 
