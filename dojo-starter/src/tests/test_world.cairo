@@ -1,7 +1,9 @@
 #[cfg(test)]
 mod tests {
     use dojo::model::{ModelStorage, ModelValueStorage, ModelStorageTest};
-    use dojo::world::WorldStorageTrait;
+    use dojo::world::{WorldStorage, WorldStorageTrait};
+    use dojo::world::world::Event as WorldEvent;
+    use dojo::event::Event;
     use dojo_cairo_test::{
         spawn_test_world, NamespaceDef, TestResource, ContractDef, ContractDefTrait,
         WorldStorageTestTrait
@@ -24,6 +26,7 @@ mod tests {
                 TestResource::Event(actions::e_Moved::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_Killed::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
+                TestResource::Event(actions::e_King::TEST_CLASS_HASH),
                 TestResource::Contract(actions::TEST_CLASS_HASH)
             ].span()
         };
@@ -36,6 +39,30 @@ mod tests {
             ContractDefTrait::new(@"checkers_marq", @"actions")
                 .with_writer_of([dojo::utils::bytearray_hash(@"checkers_marq")].span())
         ].span()
+    }
+
+    fn clear_world_event_log(contract_address: starknet::ContractAddress) {
+        let mut event = starknet::testing::pop_log::<WorldEvent>(contract_address);
+        while event.is_some() {
+            event = starknet::testing::pop_log::<WorldEvent>(contract_address);
+        }
+    }
+
+    fn ensure_moved_event(world: WorldStorage, moved_event: actions::Moved) {
+        let contract_address = world.dispatcher.contract_address;
+        let moved_selector = Event::<actions::Moved>::selector(world.namespace_hash);
+        let mut event = starknet::testing::pop_log::<WorldEvent>(contract_address);
+        while event.is_some() {
+            if let WorldEvent::EventEmitted(event) = event.unwrap() {
+                if event.selector == moved_selector {
+                    assert_eq!(*event.keys[0], moved_event.session_id.into(), "Wrong session id");
+                    assert_eq!(*event.keys[1], moved_event.player.into(), "Wrong player address");
+                    assert_eq!(*event.values[0], moved_event.row.into(), "Wrong row value");
+                    assert_eq!(*event.values[1], moved_event.col.into(), "Wrong col value");
+                }
+            }
+            event = starknet::testing::pop_log::<WorldEvent>(contract_address);
+        }
     }
 
     #[test]
@@ -436,8 +463,18 @@ mod tests {
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 0 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: initial_piece_position.session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position.row,
+                col: new_coordinates_position.col,
+            }
+        );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
 
@@ -472,8 +509,18 @@ mod tests {
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: initial_piece_position.session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position.row,
+                col: new_coordinates_position.col,
+            }
+        );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
 
@@ -509,8 +556,18 @@ mod tests {
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 4 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: initial_piece_position.session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position.row,
+                col: new_coordinates_position.col,
+            }
+        );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
 
@@ -547,8 +604,18 @@ mod tests {
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 6 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: initial_piece_position.session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position.row,
+                col: new_coordinates_position.col,
+            }
+        );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
 
@@ -585,8 +652,18 @@ mod tests {
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: initial_piece_position.session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position.row,
+                col: new_coordinates_position.col,
+            }
+        );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
 
@@ -633,14 +710,36 @@ mod tests {
         let can_choose_piece21 = actions_system
             .can_choose_piece(Position::Up, valid_piece_position21, session_id);
         assert(can_choose_piece21, 'can_choose_piece 21 failed');
+
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: *initial_pieces[0].session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position32.row,
+                col: new_coordinates_position32.col,
+            }
+        );
 
         let can_choose_piece56 = actions_system
             .can_choose_piece(Position::Down, valid_piece_position56, session_id);
         assert(can_choose_piece56, 'can_choose_piece 56 failed');
+
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position45 = Coordinates { row: 4, col: 5 };
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position45);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: *initial_pieces[1].session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position45.row,
+                col: new_coordinates_position45.col,
+            }
+        );
 
         let new_coordinates_keys: Array<(u64, Coordinates)> = array![
             (session_id, new_coordinates_position32), (session_id, new_coordinates_position45),
@@ -703,14 +802,36 @@ mod tests {
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position21, session_id);
         assert(can_choose_piece, 'can_choose_piece 21 failed');
+
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: *initial_pieces[0].session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position32.row,
+                col: new_coordinates_position32.col,
+            }
+        );
 
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position54, session_id);
         assert(can_choose_piece, 'can_choose_piece 54 failed');
+
+        clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position43 = Coordinates { row: 4, col: 3 };
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position43);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: *initial_pieces[0].session_id,
+                player: starknet::get_caller_address(),
+                row: new_coordinates_position43.row,
+                col: new_coordinates_position43.col,
+            }
+        );
 
         let new_coordinates_keys: Array<(u64, Coordinates)> = array![
             (session_id, new_coordinates_position32), (session_id, new_coordinates_position43),
@@ -732,7 +853,18 @@ mod tests {
         // Test position 32 moves to eat 43 then jump to 54
         let eat_position = Coordinates { row: 4, col: 3 };
         let jump_position = Coordinates { row: 5, col: 4 };
+
+        clear_world_event_log(world.dispatcher.contract_address);
         actions_system.move_piece(*new_positions[0], eat_position);
+        ensure_moved_event(
+            world,
+            actions::Moved {
+                session_id: *new_positions[0].session_id,
+                player: starknet::get_caller_address(),
+                row: jump_position.row,
+                col: jump_position.col,
+            }
+        );
 
         let updated_pieces_keys: Array<(u64, Coordinates)> = array![
             (session_id, jump_position), (session_id, eat_position),
@@ -1053,7 +1185,7 @@ mod tests {
         let mut world = spawn_test_world([ndef].span());
         world.sync_perms_and_inits(contract_defs());
 
-        let counter_key:felt252 = 'id';
+        let counter_key: felt252 = 'id';
         let mut counter: Counter = world.read_model((counter_key));
         counter.increment();
         counter.increment();
