@@ -3,6 +3,7 @@ mod tests {
     use dojo::model::{ModelStorage, ModelValueStorage, ModelStorageTest};
     use dojo::world::{WorldStorage, WorldStorageTrait};
     use dojo::world::world::Event as WorldEvent;
+    use dojo::world::world::EventEmitted;
     use dojo::event::Event;
     use dojo_cairo_test::{
         spawn_test_world, NamespaceDef, TestResource, ContractDef, ContractDefTrait,
@@ -48,22 +49,90 @@ mod tests {
         }
     }
 
-    fn ensure_moved_event(world: WorldStorage, moved_event: actions::Moved) {
+    fn retrieve_emitted_events(world: WorldStorage) -> Span<EventEmitted> {
         let contract_address = world.dispatcher.contract_address;
-        let moved_selector = Event::<actions::Moved>::selector(world.namespace_hash);
+        let mut output = array![];
         let mut event = starknet::testing::pop_log::<WorldEvent>(contract_address);
         while event.is_some() {
             if let WorldEvent::EventEmitted(event) = event.unwrap() {
-                if event.selector == moved_selector {
-                    assert_eq!(*event.keys[0], moved_event.session_id.into(), "Wrong session id");
-                    assert_eq!(*event.keys[1], moved_event.player.into(), "Wrong player address");
-                    assert_eq!(*event.values[0], moved_event.row.into(), "Wrong row value");
-                    assert_eq!(*event.values[1], moved_event.col.into(), "Wrong col value");
-                }
+                output.append(event);
             }
             event = starknet::testing::pop_log::<WorldEvent>(contract_address);
-        }
+        };
+        output.span()
     }
+
+    fn ensure_moved_event(
+        world: WorldStorage, emitted_events: Span<EventEmitted>, moved_event: actions::Moved
+    ) {
+        let selector = Event::<actions::Moved>::selector(world.namespace_hash);
+        let mut found = false;
+        for event in emitted_events {
+            if *event.selector == selector
+                && *event.keys[0] == moved_event.session_id.into()
+                && *event.keys[1] == moved_event.player.into()
+                && *event.values[0] == moved_event.row.into()
+                && *event.values[1] == moved_event.col.into() {
+                found = true;
+                break;
+            };
+        };
+        assert!(found, "Moved event not found");
+    }
+
+    fn ensure_killed_event(
+        world: WorldStorage, emitted_events: Span<EventEmitted>, killed_event: actions::Killed
+    ) {
+        let selector = Event::<actions::Killed>::selector(world.namespace_hash);
+        let mut found = false;
+        for event in emitted_events {
+            if *event.selector == selector
+                && *event.keys[0] == killed_event.session_id.into()
+                && *event.keys[1] == killed_event.player.into()
+                && *event.values[0] == killed_event.row.into()
+                && *event.values[1] == killed_event.col.into() {
+                found = true;
+                break;
+            };
+        };
+        assert!(found, "Killed event not found");
+    }
+
+    fn ensure_winner_event(
+        world: WorldStorage, emitted_events: Span<EventEmitted>, winner_event: actions::Winner
+    ) {
+        let selector = Event::<actions::Winner>::selector(world.namespace_hash);
+        let mut found = false;
+        for event in emitted_events {
+            if *event.selector == selector
+                && *event.keys[0] == winner_event.session_id.into()
+                && *event.keys[1] == winner_event.player.into()
+                && *event.values[0] == winner_event.position.into() {
+                found = true;
+                break;
+            };
+        };
+        assert!(found, "Winner event not found");
+    }
+
+    fn ensure_king_event(
+        world: WorldStorage, emitted_events: Span<EventEmitted>, king_event: actions::King
+    ) {
+        let selector = Event::<actions::King>::selector(world.namespace_hash);
+        let mut found = false;
+        for event in emitted_events {
+            if *event.selector == selector
+                && *event.keys[0] == king_event.session_id.into()
+                && *event.keys[1] == king_event.player.into()
+                && *event.values[0] == king_event.row.into()
+                && *event.values[1] == king_event.col.into() {
+                found = true;
+                break;
+            };
+        };
+        assert!(found, "King event not found");
+    }
+
 
     #[test]
     fn test_world_test_set() {
@@ -466,8 +535,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 0 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: initial_piece_position.session_id,
                 player: starknet::get_caller_address(),
@@ -512,8 +583,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: initial_piece_position.session_id,
                 player: starknet::get_caller_address(),
@@ -559,8 +632,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 4 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: initial_piece_position.session_id,
                 player: starknet::get_caller_address(),
@@ -607,8 +682,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 6 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: initial_piece_position.session_id,
                 player: starknet::get_caller_address(),
@@ -655,8 +732,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: initial_piece_position.session_id,
                 player: starknet::get_caller_address(),
@@ -714,8 +793,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: *initial_pieces[0].session_id,
                 player: starknet::get_caller_address(),
@@ -731,8 +812,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position45 = Coordinates { row: 4, col: 5 };
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position45);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: *initial_pieces[1].session_id,
                 player: starknet::get_caller_address(),
@@ -806,8 +889,10 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: *initial_pieces[0].session_id,
                 player: starknet::get_caller_address(),
@@ -823,11 +908,13 @@ mod tests {
         clear_world_event_log(world.dispatcher.contract_address);
         let new_coordinates_position43 = Coordinates { row: 4, col: 3 };
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position43);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: *initial_pieces[0].session_id,
-                player: starknet::get_caller_address(),
+                player: player2,
                 row: new_coordinates_position43.row,
                 col: new_coordinates_position43.col,
             }
@@ -856,13 +943,25 @@ mod tests {
 
         clear_world_event_log(world.dispatcher.contract_address);
         actions_system.move_piece(*new_positions[0], eat_position);
+        let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
             world,
+            emitted_events,
             actions::Moved {
                 session_id: *new_positions[0].session_id,
                 player: starknet::get_caller_address(),
                 row: jump_position.row,
                 col: jump_position.col,
+            }
+        );
+        ensure_killed_event(
+            world,
+            emitted_events,
+            actions::Killed {
+                session_id: *new_positions[0].session_id,
+                player: starknet::get_caller_address(),
+                row: 4,
+                col: 3,
             }
         );
 
@@ -992,8 +1091,8 @@ mod tests {
 
         let next_position = Coordinates { row: 5, col: 2 };
         actions_system.move_piece(current_position, next_position);
-        let current_position: Piece = world.read_model((session_id, next_position));
 
+        let current_position: Piece = world.read_model((session_id, next_position));
         assert!(current_position.session_id == 0, "wrong session");
         assert!(current_position.row == 5, "piece 52 x is wrong");
         assert!(current_position.col == 2, "piece 52 y is wrong");
@@ -1001,11 +1100,22 @@ mod tests {
         assert!(current_position.is_king == false, "piece 52 is king");
         assert!(current_position.position == Position::Up, "piece 52 is not right team");
 
+        clear_world_event_log(world.dispatcher.contract_address);
         let next_position = Coordinates { row: 6, col: 1 };
-        actions_system.move_piece(current_position, next_position);
-
-        // Now position is 70
         let king_position = Coordinates { row: 7, col: 0 };
+        actions_system.move_piece(current_position, next_position);
+        let emitted_events = retrieve_emitted_events(world);
+        ensure_king_event(
+            world,
+            emitted_events,
+            actions::King {
+                session_id: current_position.session_id,
+                player: starknet::get_caller_address(),
+                row: king_position.row,
+                col: king_position.col,
+            }
+        );
+
         let current_position: Piece = world.read_model((session_id, king_position));
 
         assert!(current_position.session_id == 0, "wrong session");
