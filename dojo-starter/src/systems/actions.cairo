@@ -148,8 +148,7 @@ pub mod actions {
         ) {
             // Get the address of the current caller, possibly the player's address.
             let mut world = self.world_default();
-
-            //let player = get_caller_address();
+            // let player_address = get_caller_address();
 
             // Check is new coordinates is valid
             let is_valid_position = self.check_is_valid_position(new_coordinates_position);
@@ -165,10 +164,30 @@ pub mod actions {
             // Update the piece's coordinates based on the new coordinates.
             self.update_piece_position(current_piece, square);
 
-            // Update the session's turn
-            let mut session: Session = world.read_model((session_id));
-            session.turn = (session.turn + 1) % 2;
-            world.write_model(@session);
+            // Get updated position & target square
+            let updated_pieces_keys: Array<(u64, u8, u8)> = array![
+                (session_id, current_piece.row, current_piece.col), 
+                (session_id, square.row, square.col),
+            ];
+            let updated_pieces: Array<Piece> = world.read_models(updated_pieces_keys.span());
+            
+            // Conditions to check for new jump:
+            // - Move caused a piece to be eaten (jump done)
+            // - Move did not cause a promotion to king
+            let is_piece_eaten = *updated_pieces[1].is_alive == false;
+            let is_status_changed = current_piece.is_king != *updated_pieces[0].is_king;
+            let can_jump_again = if (!is_status_changed && is_piece_eaten) {
+                self.is_consecutive_jump_possible(*updated_pieces[0])
+            } else {
+                false
+            };
+
+            // Update the session's turn if no further action is possible
+            if (!can_jump_again) {
+                let mut session: Session = world.read_model((session_id));
+                session.turn = (session.turn + 1) % 2;
+                world.write_model(@session);
+            }
         }
 
         //Getter function
@@ -459,6 +478,65 @@ pub mod actions {
                     _ => false
                 }
             }
+        }
+
+        fn is_consecutive_jump_possible(self: @ContractState, piece: Piece) -> bool {
+            let world = self.world_default();
+            let session_id = piece.session_id;
+
+            // Contruct possible jump keys for bulk read
+            let mut possible_jumps_up_keys: Array<(u64, Coordinates)> = array![];
+            let mut possible_jumps_down_keys: Array<(u64, Coordinates)> = array![];
+
+            // Ensure we don't check outbound squares
+            if piece.row > 0 && piece.col < 7 {
+                possible_jumps_up_keys.append(
+                    (session_id, Coordinates { row: piece.row - 1, col: piece.col + 1 })
+                ); // UR
+            }
+            if piece.row > 0 && piece.col > 0 {
+                possible_jumps_up_keys.append(
+                    (session_id, Coordinates { row: piece.row - 1, col: piece.col - 1 })
+                ); // UL
+            }
+            if piece.row < 7 && piece.col < 7 {
+                possible_jumps_down_keys.append(
+                    (session_id, Coordinates { row: piece.row + 1, col: piece.col + 1 })
+                ); // DR
+            }
+            if piece.row < 7 && piece.col > 0 {
+                possible_jumps_down_keys.append(
+                    (session_id, Coordinates { row: piece.row + 1, col: piece.col - 1 })
+                ); // DL
+            }
+            
+            let possible_jumps_up: Array<Piece> = world.read_models(possible_jumps_up_keys.span());
+            let possible_jumps_down: Array<Piece> = world.read_models(possible_jumps_down_keys.span());
+
+            // Check for valid jumps for corresponding direction 
+            // King can jump in both directions
+            let mut can_jump_again = false;
+            if (piece.position == Position::Down || piece.is_king) {
+                for jump_up in possible_jumps_up {
+                    // Check for possible jump. Pieces must be in diferent teams
+                    if (self.is_jump_possible(piece, jump_up) 
+                        && piece.position != jump_up.position) {
+                        can_jump_again = true;
+                    }
+                };
+            }
+
+            if (piece.position == Position::Up || piece.is_king) {
+                for jump_down in possible_jumps_down {
+                    // Check for possible jump. Pieces must be in diferent teams
+                    if (self.is_jump_possible(piece, jump_down) 
+                        && piece.position != jump_down.position) {
+                        can_jump_again = true;
+                    }
+                };
+            }
+
+            can_jump_again
         }
 
         fn update_alive_position(ref self: ContractState, mut piece: Piece, mut square: Piece) {
