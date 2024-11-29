@@ -896,7 +896,7 @@ mod tests {
     }
 
     #[test]
-    fn test_piece41_double_jump_piece05() {
+    fn test_piece41_double_jump_straight_piece05() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
         world.sync_perms_and_inits(contract_defs());
@@ -907,8 +907,8 @@ mod tests {
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
         let session_id = actions_system.create_lobby();
-        // Cheat call the second player
         
+        // Cheat call the second player
         starknet::testing::set_contract_address(player2);
         actions_system.join_lobby(session_id);
 
@@ -918,65 +918,264 @@ mod tests {
         // Reset player to default operation
         starknet::testing::set_contract_address(player1);
 
-        // Arrange piece 05 -> 34 for double jump
-        let p2_05 = Coordinates {row: 0, col: 5};
-        let p2_34 = Coordinates {row: 3, col: 4};
-
-        // Move p1 50->41, p2 23->32
-        let p1_50 = Coordinates {row: 5, col: 0};
-        let p1_41 = Coordinates {row: 4, col: 1};
-
-        let p2_23 = Coordinates {row: 2, col: 3};
-        let p2_32 = Coordinates {row: 3, col: 2};
-
+        // Arrange piece 05 -> 34, make space for double jump
+        let pos_05 = Coordinates {row: 0, col: 5};
+        let pos_14 = Coordinates {row: 1, col: 4};
+        let pos_23 = Coordinates {row: 2, col: 3};
+        let pos_32 = Coordinates {row: 3, col: 2};
+        let pos_34 = Coordinates {row: 3, col: 4};
+        let pos_41 = Coordinates {row: 4, col: 1};
+        let pos_47 = Coordinates {row: 4, col: 1};
+        let pos_50 = Coordinates {row: 5, col: 0};
+        let pos_56 = Coordinates {row: 5, col: 0};
+        
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, p2_05),
-            (session_id, p1_50),
-            (session_id, p2_23),
+            (session_id, pos_50),
+            (session_id, pos_23),
+            (session_id, pos_56),
+            (session_id, pos_05),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
 
-        actions_system.move_piece(*pieces[0], p2_34);
-        actions_system.move_piece(*pieces[1], p1_41);
-        actions_system.move_piece(*pieces[2], p2_32);
+        actions_system.move_piece(*pieces[0], pos_41);
+        actions_system.move_piece(*pieces[1], pos_32);
+        actions_system.move_piece(*pieces[2], pos_47);
+        actions_system.move_piece(*pieces[3], pos_34);
 
-        // Get updated pieces
+        // Test all is arranged for souble straight jump
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, p1_41), (session_id, p2_32),
+            (session_id, pos_41), (session_id, pos_32),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
-        assert!(*pieces[0].is_alive == true, "piece 42 is not alive");
+        assert!(*pieces[0].is_alive == true, "piece 41 is not alive");
         assert!(*pieces[1].is_alive == true, "piece 32 is not alive");
 
-        // Test 41 eats 32 and 14, jump 41->23->05
-        let p1_23 = Coordinates {row: 2, col: 3};
-        actions_system.move_piece(*pieces[0], p2_32);
+        // Test 41 eats 32 and 14, jump 41(start) -> 32(eat) ->23 (land)-> 14(eat)-> 05(land)
+        actions_system.move_piece(*pieces[0], pos_32);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, p1_23), (session_id, p2_32),
+            (session_id, pos_23), (session_id, pos_32),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
         assert!(*pieces[0].is_alive == true, "piece 23 is not alive");
         assert!(*pieces[1].is_alive == false, "piece 32 is alive");
-
-        // Turn should remain the same after eating due to jump available
-        let session: Session = world.read_model((session_id));
         assert!(session.turn == 0, "turned changed");
-
-        let p2_14 = Coordinates {row: 1, col: 4};
-        let p1_05 = Coordinates {row: 0, col: 5};
-        actions_system.move_piece(*pieces[0], p2_14);
+        
+        actions_system.move_piece(*pieces[0], pos_14);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, p1_23), (session_id, p2_14), (session_id, p1_05)
+            (session_id, pos_23), (session_id, pos_14), (session_id, pos_05)
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
         assert!(*pieces[0].is_alive == false, "piece 23 is alive");
         assert!(*pieces[1].is_alive == false, "piece 14 is alive");
         assert!(*pieces[2].is_alive == true, "piece 05 is not alive");
         assert!(*pieces[2].position == Position::Down, "piece 05 wrong team");
-
-        // Turn should change because piece is promoted
-        let session: Session = world.read_model((session_id));
         assert!(session.turn == 1, "turned not changed");
+    }
+
+    #[test]
+    fn test_piece23_double_jump_zigzag_piece72() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
+
+        let player1 = starknet::contract_address_const::<0x0>();
+        let player2 = starknet::contract_address_const::<0x1>();
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+        let session_id = actions_system.create_lobby();
+
+        // Cheat call the second player
+        starknet::testing::set_contract_address(player2);
+        actions_system.join_lobby(session_id);
+
+        let session: Session = world.read_model((session_id));
+        assert(session.player_2 == player2, 'wrong player');
+        
+        // Reset player to default operation
+        starknet::testing::set_contract_address(player1);
+
+        // Arrange pieces for double zigzag
+        let pos_23 = Coordinates {row: 2, col: 3};
+        let pos_32 = Coordinates {row: 3, col: 2};
+        let pos_41 = Coordinates {row: 4, col: 1};
+        let pos_43 = Coordinates {row: 4, col: 3};
+        let pos_50 = Coordinates {row: 5, col: 0};
+        let pos_61 = Coordinates {row: 6, col: 1};
+        let pos_72 = Coordinates {row: 7, col: 2};
+
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_72),
+            (session_id, pos_23),
+            (session_id, pos_50),
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+
+        actions_system.move_piece(*pieces[0], pos_43);
+        actions_system.move_piece(*pieces[1], pos_32);
+        actions_system.move_piece(*pieces[2], pos_41);
+
+        // Test all is arranged for double zigzag jump
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_32), (session_id, pos_41), (session_id, pos_72), 
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        assert!(*pieces[0].is_alive == true, "piece 32 is not alive");
+        assert!(*pieces[1].is_alive == true, "piece 41 is not alive");
+        assert!(*pieces[2].is_alive == false, "piece 72 is alive");
+
+        // Test 32 eats 41 and 61, jump 32->50->72
+        actions_system.move_piece(*pieces[0], pos_41);
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_50), (session_id, pos_41),
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
+        assert!(*pieces[0].is_alive == true, "piece 50 is not alive");
+        assert!(*pieces[1].is_alive == false, "piece 41 is alive");
+        assert!(*pieces[0].position == Position::Up, "piece 50 wrong team");
+        assert!(session.turn == 1, "turn changed");
+        
+        actions_system.move_piece(*pieces[0], pos_61);
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_50), (session_id, pos_61), (session_id, pos_72)
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
+        assert!(*pieces[0].is_alive == false, "piece 50 is alive");
+        assert!(*pieces[1].is_alive == false, "piece 61 is alive");
+        assert!(*pieces[2].is_alive == true, "piece 72 is not alive");
+        assert!(*pieces[2].position == Position::Up, "piece 05 wrong team");
+        assert!(session.turn == 0, "turned not changed");
+    }
+
+    #[test]
+    fn test_king05_triple_jump_zigzag_piece23() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
+
+        let player1 = starknet::contract_address_const::<0x0>();
+        let player2 = starknet::contract_address_const::<0x1>();
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+        let session_id = actions_system.create_lobby();
+        
+        // Cheat call the second player
+        starknet::testing::set_contract_address(player2);
+        actions_system.join_lobby(session_id);
+
+        let session: Session = world.read_model((session_id));
+        assert(session.player_2 == player2, 'wrong player');
+        
+        // Reset player to default operation
+        starknet::testing::set_contract_address(player1);
+
+        // All needed coordinates for test
+        let pos_05 = Coordinates {row: 0, col: 5};
+        let pos_14 = Coordinates {row: 1, col: 4};
+        let pos_16 = Coordinates {row: 1, col: 6};
+        let pos_23 = Coordinates {row: 2, col: 3};
+        let pos_25 = Coordinates {row: 2, col: 5};
+        let pos_27 = Coordinates {row: 2, col: 7};
+        let pos_30 = Coordinates {row: 3, col: 0};
+        let pos_32 = Coordinates {row: 3, col: 2};
+        let pos_34 = Coordinates {row: 3, col: 4};
+        let pos_36 = Coordinates {row: 3, col: 6};
+        let pos_41 = Coordinates {row: 4, col: 1};
+        let pos_43 = Coordinates {row: 4, col: 3};
+        let pos_45 = Coordinates {row: 4, col: 5};
+        let pos_47 = Coordinates {row: 4, col: 7};
+        let pos_50 = Coordinates {row: 5, col: 0};
+        let pos_54 = Coordinates {row: 5, col: 4};
+        let pos_56 = Coordinates {row: 5, col: 6};
+        let pos_61 = Coordinates {row: 6, col: 1};
+        let pos_70 = Coordinates {row: 7, col: 0};
+
+        // Arrange pieces for scenario
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_56),
+            (session_id, pos_05),
+            (session_id, pos_54),
+            (session_id, pos_25),
+            (session_id, pos_50),
+            (session_id, pos_27),
+            (session_id, pos_61),
+            (session_id, pos_23),
+            (session_id, pos_70),
+            (session_id, pos_14),
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+
+        actions_system.move_piece(*pieces[0], pos_47);
+        actions_system.move_piece(*pieces[1], pos_30);
+        actions_system.move_piece(*pieces[2], pos_43);
+        actions_system.move_piece(*pieces[3], pos_34);
+        actions_system.move_piece(*pieces[4], pos_05);
+        actions_system.move_piece(*pieces[5], pos_36);
+        actions_system.move_piece(*pieces[6], pos_50);
+        actions_system.move_piece(*pieces[7], pos_32);
+        actions_system.move_piece(*pieces[8], pos_61);
+        actions_system.move_piece(*pieces[9], pos_41);
+
+        // Test all is arranged for triple zigzag king jump
+        let session: Session = world.read_model((session_id));
+        let king: Piece = world.read_model((session_id, pos_05));
+        assert!(king.is_alive == true, "king 05 is not alive");
+        assert!(king.is_king == true, "king 05 is not king");
+        assert!(king.position == Position::Down, "king 05 wrong team");
+        assert!(session.turn == 0, "turn is wrong");
+        
+        // Test 05 eats 16 lands 27
+        actions_system.move_piece(king, pos_16);
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_05),
+            (session_id, pos_16),
+            (session_id, pos_27),
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
+        assert!(*pieces[0].is_alive == false, "piece 05 is alive");
+        assert!(*pieces[1].is_alive == false, "piece 16 is alive");
+        assert!(*pieces[2].is_alive == true, "king 27 is not alive");
+        assert!(*pieces[2].is_king == true, "king 27 is not king");
+        assert!(*pieces[2].position == Position::Down, "king 27 wrong team");
+        assert!(session.turn == 0, "turn changed");
+
+        // Test 27 eats 36 lands 45
+        actions_system.move_piece(*pieces[2], pos_36);
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_27),
+            (session_id, pos_36),
+            (session_id, pos_45),
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
+        assert!(*pieces[0].is_alive == false, "piece 27 is alive");
+        assert!(*pieces[1].is_alive == false, "piece 36 is alive");
+        assert!(*pieces[2].is_alive == true, "king 45 is not alive");
+        assert!(*pieces[2].is_king == true, "king 45 is not king");
+        assert!(*pieces[2].position == Position::Down, "king 45 wrong team");
+        assert!(session.turn == 0, "turn changed");
+
+        // Test 45 eats 34 lands 23
+        actions_system.move_piece(*pieces[2], pos_34);
+        let pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, pos_45),
+            (session_id, pos_34),
+            (session_id, pos_23),
+        ];
+        let pieces: Array<Piece> = world.read_models(pieces_keys.span());
+        let session: Session = world.read_model((session_id));
+        assert!(*pieces[0].is_alive == false, "piece 45 is alive");
+        assert!(*pieces[1].is_alive == false, "piece 34 is alive");
+        assert!(*pieces[2].is_alive == true, "king 23 is not alive");
+        assert!(*pieces[2].is_king == true, "king 23 is not king");
+        assert!(*pieces[2].position == Position::Down, "king 23 wrong team");
+        assert!(session.turn == 1, "turn not changed");
     }
 
     #[test]

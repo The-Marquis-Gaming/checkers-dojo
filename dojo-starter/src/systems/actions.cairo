@@ -175,9 +175,17 @@ pub mod actions {
             // - Move caused a piece to be eaten (jump done)
             // - Move did not cause a promotion to king
             let is_piece_eaten = *updated_pieces[1].is_alive == false;
-            let is_status_changed = current_piece.is_king != *updated_pieces[0].is_king;
-            let can_jump_again = if (!is_status_changed && is_piece_eaten) {
-                self.is_consecutive_jump_possible(*updated_pieces[0])
+            let can_jump_again = if (is_piece_eaten) {
+                // Get jump landing position
+                let land_position = self.calculate_jump_position(current_piece, square);
+                let land_piece: Piece = world.read_model((session_id, land_position));
+                
+                // Check for jumps if status didn't change
+                if current_piece.is_king == land_piece.is_king {
+                    self.is_consecutive_jump_possible(land_piece) 
+                } else {
+                    false
+                }
             } else {
                 false
             };
@@ -439,45 +447,13 @@ pub mod actions {
         fn is_jump_possible(self: @ContractState, piece: Piece, square: Piece) -> bool {
             let world = self.world_default();
             let session_id = piece.session_id;
-            if piece.col > square.col {
-                // Move left
-                match piece.position {
-                    Position::Up => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row + 2, col: piece.col - 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    Position::Down => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row - 2, col: piece.col - 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    _ => false
-                }
-            } else {
-                // Move right
-                match piece.position {
-                    Position::Up => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row + 2, col: piece.col + 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    Position::Down => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row - 2, col: piece.col + 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    _ => false
-                }
-            }
+            // Cannot jump over square if piece in square is not alive
+            if !square.is_alive { return false; }
+
+            let land_pos = self.calculate_jump_position(piece, square);
+            let land_piece: Piece = world.read_model((session_id, land_pos));
+            
+            !land_piece.is_alive
         }
 
         fn is_consecutive_jump_possible(self: @ContractState, piece: Piece) -> bool {
@@ -519,8 +495,7 @@ pub mod actions {
             if (piece.position == Position::Down || piece.is_king) {
                 for jump_up in possible_jumps_up {
                     // Check for possible jump. Pieces must be in diferent teams
-                    if (self.is_jump_possible(piece, jump_up) 
-                        && piece.position != jump_up.position) {
+                    if (self.is_jump_possible(piece, jump_up) && piece.position != jump_up.position) {
                         can_jump_again = true;
                     }
                 };
@@ -529,14 +504,30 @@ pub mod actions {
             if (piece.position == Position::Up || piece.is_king) {
                 for jump_down in possible_jumps_down {
                     // Check for possible jump. Pieces must be in diferent teams
-                    if (self.is_jump_possible(piece, jump_down) 
-                        && piece.position != jump_down.position) {
+                    if (self.is_jump_possible(piece, jump_down) && piece.position != jump_down.position) {
                         can_jump_again = true;
                     }
                 };
             }
 
             can_jump_again
+        }
+
+        /// Calculate jump position for given start position and eaten piece position.
+        /// Takes into account all types of pieces (man/king) and all positions.
+        fn calculate_jump_position(self: @ContractState, original: Piece, eaten: Piece) -> Coordinates {
+            // Use signed integers to handle negative values when calculating landing position
+            let signed_original_row: i8 = original.row.try_into().unwrap();
+            let signed_original_col: i8 = original.col.try_into().unwrap();
+            let signed_eaten_row: i8 = eaten.row.try_into().unwrap();
+            let signed_eaten_col: i8 = eaten.col.try_into().unwrap();
+
+            let land_row: i8 = signed_original_row + 2 * (signed_eaten_row - signed_original_row);
+            let land_col: i8 = signed_original_col + 2 * (signed_eaten_col - signed_original_col);
+
+            assert!(land_row >= 0, "row less than 0");
+            assert!(land_col >= 0, "col less than 0");
+            Coordinates { row: land_row.try_into().unwrap(), col: land_col.try_into().unwrap() }
         }
 
         fn update_alive_position(ref self: ContractState, mut piece: Piece, mut square: Piece) {
@@ -571,41 +562,8 @@ pub mod actions {
                 }
 
                 // Make the jump
-                if piece.col > square.col {
-                    // Move left
-                    match piece.position {
-                        Position::Up => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row + 2, col: piece.col - 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        Position::Down => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row - 2, col: piece.col - 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        _ => {}
-                    }
-                } else {
-                    // Move right
-                    match piece.position {
-                        Position::Up => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row + 2, col: piece.col + 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        Position::Down => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row - 2, col: piece.col + 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        _ => {}
-                    }
-                }
+                let land_pos = self.calculate_jump_position(piece, square);
+                self.change_is_alive(piece, land_pos);
             }
         }
 
