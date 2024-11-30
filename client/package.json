@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cartridge/connector": "^0.3.46",
-    "@cartridge/controller": "^0.3.46",
+    "@cartridge/connector": "^0.5.1",
+    "@cartridge/controller": "^0.5.1",
     "@dojoengine/core": "1.0.0-alpha.24",
     "@dojoengine/create-burner": "1.0.0-alpha.24",
     "@dojoengine/sdk": "1.0.0-alpha.24",

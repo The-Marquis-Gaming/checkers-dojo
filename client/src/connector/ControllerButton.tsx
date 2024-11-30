@@ -1,15 +1,24 @@
-import React, { useState } from "react";
-import useControllerAccount from "../hooks/useControllerAccount";
+import React, { useEffect, useState } from "react";
 import Cartridge from "../assets/Cartridge.png";
+import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 
 const ControllerButton: React.FC = () => {
-  const {
-    userName,
-    userAccountController,
-    isConnected,
-    handleConnect,
-    handleDisconnect,
-  } = useControllerAccount();
+
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { address } = useAccount();
+
+  const connector = connectors[0];
+  const [userName, setUserName] = useState<string>();
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (!address) return;
+    (connector as any).username()?.then((name: string) => {
+      setUserName(name), setIsConnected(true);
+    });
+    console.log(userName, "USERnAaaME", address, "addres");
+  }, [address, connector]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -18,15 +27,17 @@ const ControllerButton: React.FC = () => {
   };
 
   // Recortar la dirección de la cuenta para una visualización más clara
-  const slicedAddress = userAccountController
-    ? `${userAccountController.slice(0, 6)}...${userAccountController.slice(-4)}`
-    : "Connect";
+  const slicedAddress = address
+    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+    : "Conectar";
 
   return (
     <div className="relative">
       {/* Botón principal */}
       <button
-        onClick={isConnected ? toggleMenu : handleConnect}
+        onClick={
+          isConnected ? toggleMenu : () => connect({ connector })
+        }
         className="flex items-center rounded-md overflow-hidden font-bold cursor-pointer pl-2"
         style={{
           background: "linear-gradient(to right, #EE7921 40%, #520066 40%)",
@@ -35,8 +46,7 @@ const ControllerButton: React.FC = () => {
           height: "45px",
           borderRadius: "8px",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-        }}
-      >
+        }}>
         <img
           src={Cartridge}
           alt="User Icon"
@@ -51,16 +61,14 @@ const ControllerButton: React.FC = () => {
           style={{
             lineHeight: "45px",
             fontWeight: "bold",
-          }}
-        >
-          {isConnected ? userName || "Connected" : "Connect"}
+          }}>
+          {isConnected ? userName || "Conectado" : "Conectar"}
         </span>
         <span
           className={`transform transition-transform duration-300 ${
             isMenuOpen ? "rotate-180" : ""
           }`}
-          style={{ marginRight: "10px" }}
-        >
+          style={{ marginRight: "10px" }}>
           ▼
         </span>
       </button>
@@ -74,32 +82,33 @@ const ControllerButton: React.FC = () => {
             border: "1px solid #520066",
             color: "white",
             width: "220px",
-          }}
-        >
+          }}>
           <div className="flex justify-between items-center mb-2">
             <p className="text-sm">
               <strong>Usuario:</strong>{" "}
-              <span style={{ fontWeight: "normal" }}>{userName || "Sin nombre"}</span>
+              <span style={{ fontWeight: "normal" }}>
+                {userName || "Sin nombre"}
+              </span>
             </p>
           </div>
 
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold">
-              <strong>Dirección:</strong> {" "}
-              <span style={{ fontWeight: "normal" }}>{slicedAddress || "Sin nombre"}</span>
+              <strong>Dirección:</strong>{" "}
+              <span style={{ fontWeight: "normal" }}>
+                {slicedAddress || "Sin nombre"}
+              </span>
             </p>
             <button
-              onClick={() => navigator.clipboard.writeText(userAccountController || "")}
+              onClick={() => navigator.clipboard.writeText(address || "")}
               className="ml-2 text-white hover:text-gray-400 transition duration-300"
-              title="Copiar Dirección"
-            >
+              title="Copiar Dirección">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -111,9 +120,8 @@ const ControllerButton: React.FC = () => {
           </div>
 
           <button
-            onClick={handleDisconnect}
-            className="w-full bg-[#520066] hover:bg-[#6A0080] text-white font-bold py-2 rounded-md transition duration-300 ease-in-out"
-          >
+            onClick={() => {disconnect(), setIsConnected(false),toggleMenu()}}
+            className="w-full bg-[#520066] hover:bg-[#6A0080] text-white font-bold py-2 rounded-md transition duration-300 ease-in-out">
             Desconectar
           </button>
         </div>

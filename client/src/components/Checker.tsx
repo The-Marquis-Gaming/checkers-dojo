@@ -16,15 +16,19 @@ import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Return from "../assets/Return.png";
 import CreateBurner from "../connector/CreateBurner";
+import { useAccount } from "@starknet-react/core";
+import { Account } from "starknet";
 
 export const useDojoStore = createDojoStore<typeof schema>();
 
 function Checker({ }: { sdk: SDK<typeof schema> }) {
   const {
-    account: { account },
+    // account: { account },
     setup: { setupWorld },
   } = useDojo();
 
+  const {account} = useAccount();
+  const accountStarknet = account as Account;
   const [arePiecesVisible] = useState(true);
   const [isGameOver] = useState(false);
   const [isWinner, setIsWinner] = useState(false);
@@ -34,7 +38,9 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [orangeScore, setOrangeScore] = useState(12);
   const [blackScore, setBlackScore] = useState(12);
 
-  const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
+  const { initialBlackPieces, initialOrangePieces } = createInitialPieces(
+    accountStarknet.address
+  );
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
   const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
 
@@ -236,7 +242,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
     try {
       if (account) {
         const { row, col } = piece.piece;
-        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col }, 0);
+        await (await setupWorld.actions).canChoosePiece(accountStarknet, piece.piece.position, { row, col }, 0);
       }
     } catch (error) {
       console.error("Error verificando la pieza seleccionada:", error);
@@ -295,8 +301,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
     try {
       if (account) {
-        const movedPiece = await (await setupWorld.actions).movePiece(
-          account,
+        const movedPiece = await(await setupWorld.actions).movePiece(
+          accountStarknet,
           selectedPiece.piece,
           move
         );
