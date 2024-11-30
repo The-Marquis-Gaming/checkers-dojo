@@ -1093,10 +1093,10 @@ mod tests {
             world,
             emitted_events,
             actions::King {
-                session_id: current_position.session_id,
+                session_id: current_piece.session_id,
                 player: starknet::get_caller_address(),
-                row: king_position.row,
-                col: king_position.col,
+                row: current_piece.row,
+                col: current_piece.col,
             }
         );
         assert!(current_piece.session_id == 0, "wrong session");
