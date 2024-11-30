@@ -60,6 +60,17 @@ pub mod actions {
         pub position: Position,
     }
 
+    #[derive(Copy, Drop, Serde)]
+    #[dojo::event]
+    pub struct King {
+        #[key]
+        pub session_id: u64,
+        #[key]
+        pub player: ContractAddress,
+        pub row: u8,
+        pub col: u8,
+    }
+
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn create_lobby(ref self: ContractState) -> u64 {
@@ -81,7 +92,7 @@ pub mod actions {
                 state: 0,
             };
             world.write_model(@session);
-            
+
             // Initialize the pieces for the session
             self.initialize_pieces_session_id(session_id);
             // Spawn the pieces for the player
@@ -319,6 +330,7 @@ pub mod actions {
             let mut world = self.world_default();
             let session_id = current_piece.session_id;
             let mut square: Piece = world.read_model((session_id, new_coordinates_position));
+            let was_king = current_piece.is_king;
 
             // Check if the piece can be promoted to a king
             if current_piece.position == Position::Up && new_coordinates_position.row == 7 {
@@ -327,6 +339,7 @@ pub mod actions {
                 && new_coordinates_position.row == 0 {
                 current_piece.is_king = true;
             }
+
             // Update the piece attributes based on the new coordinates.
             square.is_alive = true;
             square.player = current_piece.player;
@@ -347,6 +360,10 @@ pub mod actions {
             let row = new_coordinates_position.row;
             let col = new_coordinates_position.col;
             world.emit_event(@Moved { session_id, player: square.player, row, col });
+
+            if square.is_king && !was_king {
+                world.emit_event(@King { session_id, player: square.player, row, col });
+            }
         }
 
         fn check_has_valid_moves(self: @ContractState, piece: Piece) -> bool {
