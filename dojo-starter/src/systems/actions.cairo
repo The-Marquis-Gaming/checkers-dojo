@@ -159,8 +159,7 @@ pub mod actions {
         ) {
             // Get the address of the current caller, possibly the player's address.
             let mut world = self.world_default();
-
-            //let player = get_caller_address();
+            // let player_address = get_caller_address();
 
             // Check is new coordinates is valid
             let is_valid_position = self.check_is_valid_position(new_coordinates_position);
@@ -176,10 +175,38 @@ pub mod actions {
             // Update the piece's coordinates based on the new coordinates.
             self.update_piece_position(current_piece, square);
 
-            // Update the session's turn
-            let mut session: Session = world.read_model((session_id));
-            session.turn = (session.turn + 1) % 2;
-            world.write_model(@session);
+            // Get updated position & target square
+            let updated_pieces_keys: Array<(u64, u8, u8)> = array![
+                (session_id, current_piece.row, current_piece.col), 
+                (session_id, square.row, square.col),
+            ];
+            let updated_pieces: Array<Piece> = world.read_models(updated_pieces_keys.span());
+            
+            // Conditions to check for new jump:
+            // - Move caused a piece to be eaten (jump done)
+            // - Move did not cause a promotion to king
+            let is_piece_eaten = *updated_pieces[1].is_alive == false;
+            let can_jump_again = if (is_piece_eaten) {
+                // Get jump landing position
+                let land_position = self.calculate_jump_position(current_piece, square);
+                let land_piece: Piece = world.read_model((session_id, land_position));
+                
+                // Check for jumps if status didn't change
+                if current_piece.is_king == land_piece.is_king {
+                    self.is_consecutive_jump_possible(land_piece) 
+                } else {
+                    false
+                }
+            } else {
+                false
+            };
+
+            // Update the session's turn if no further action is possible
+            if (!can_jump_again) {
+                let mut session: Session = world.read_model((session_id));
+                session.turn = (session.turn + 1) % 2;
+                world.write_model(@session);
+            }
         }
 
         //Getter function
@@ -437,45 +464,87 @@ pub mod actions {
         fn is_jump_possible(self: @ContractState, piece: Piece, square: Piece) -> bool {
             let world = self.world_default();
             let session_id = piece.session_id;
-            if piece.col > square.col {
-                // Move left
-                match piece.position {
-                    Position::Up => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row + 2, col: piece.col - 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    Position::Down => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row - 2, col: piece.col - 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    _ => false
-                }
-            } else {
-                // Move right
-                match piece.position {
-                    Position::Up => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row + 2, col: piece.col + 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    Position::Down => {
-                        let jump_coordinates = Coordinates {
-                            row: piece.row - 2, col: piece.col + 2
-                        };
-                        let jump_square: Piece = world.read_model((session_id, jump_coordinates));
-                        return !jump_square.is_alive;
-                    },
-                    _ => false
-                }
+            // Cannot jump over square if piece in square is not alive
+            if !square.is_alive { return false; }
+
+            let land_pos = self.calculate_jump_position(piece, square);
+            let land_piece: Piece = world.read_model((session_id, land_pos));
+            
+            !land_piece.is_alive
+        }
+
+        fn is_consecutive_jump_possible(self: @ContractState, piece: Piece) -> bool {
+            let world = self.world_default();
+            let session_id = piece.session_id;
+
+            // Contruct possible jump keys for bulk read
+            let mut possible_jumps_up_keys: Array<(u64, Coordinates)> = array![];
+            let mut possible_jumps_down_keys: Array<(u64, Coordinates)> = array![];
+
+            // Ensure we don't check outbound squares
+            if piece.row > 0 && piece.col < 7 {
+                possible_jumps_up_keys.append(
+                    (session_id, Coordinates { row: piece.row - 1, col: piece.col + 1 })
+                ); // UR
             }
+            if piece.row > 0 && piece.col > 0 {
+                possible_jumps_up_keys.append(
+                    (session_id, Coordinates { row: piece.row - 1, col: piece.col - 1 })
+                ); // UL
+            }
+            if piece.row < 7 && piece.col < 7 {
+                possible_jumps_down_keys.append(
+                    (session_id, Coordinates { row: piece.row + 1, col: piece.col + 1 })
+                ); // DR
+            }
+            if piece.row < 7 && piece.col > 0 {
+                possible_jumps_down_keys.append(
+                    (session_id, Coordinates { row: piece.row + 1, col: piece.col - 1 })
+                ); // DL
+            }
+            
+            let possible_jumps_up: Array<Piece> = world.read_models(possible_jumps_up_keys.span());
+            let possible_jumps_down: Array<Piece> = world.read_models(possible_jumps_down_keys.span());
+
+            // Check for valid jumps for corresponding direction 
+            // King can jump in both directions
+            let mut can_jump_again = false;
+            if (piece.position == Position::Down || piece.is_king) {
+                for jump_up in possible_jumps_up {
+                    // Check for possible jump. Pieces must be in diferent teams
+                    if (self.is_jump_possible(piece, jump_up) && piece.position != jump_up.position) {
+                        can_jump_again = true;
+                    }
+                };
+            }
+
+            if (piece.position == Position::Up || piece.is_king) {
+                for jump_down in possible_jumps_down {
+                    // Check for possible jump. Pieces must be in diferent teams
+                    if (self.is_jump_possible(piece, jump_down) && piece.position != jump_down.position) {
+                        can_jump_again = true;
+                    }
+                };
+            }
+
+            can_jump_again
+        }
+
+        /// Calculate jump position for given start position and eaten piece position.
+        /// Takes into account all types of pieces (man/king) and all positions.
+        fn calculate_jump_position(self: @ContractState, original: Piece, eaten: Piece) -> Coordinates {
+            // Use signed integers to handle negative values when calculating landing position
+            let signed_original_row: i8 = original.row.try_into().unwrap();
+            let signed_original_col: i8 = original.col.try_into().unwrap();
+            let signed_eaten_row: i8 = eaten.row.try_into().unwrap();
+            let signed_eaten_col: i8 = eaten.col.try_into().unwrap();
+
+            let land_row: i8 = signed_original_row + 2 * (signed_eaten_row - signed_original_row);
+            let land_col: i8 = signed_original_col + 2 * (signed_eaten_col - signed_original_col);
+
+            assert!(land_row >= 0, "row less than 0");
+            assert!(land_col >= 0, "col less than 0");
+            Coordinates { row: land_row.try_into().unwrap(), col: land_col.try_into().unwrap() }
         }
 
         fn update_alive_position(ref self: ContractState, mut piece: Piece, mut square: Piece) {
@@ -510,41 +579,8 @@ pub mod actions {
                 }
 
                 // Make the jump
-                if piece.col > square.col {
-                    // Move left
-                    match piece.position {
-                        Position::Up => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row + 2, col: piece.col - 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        Position::Down => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row - 2, col: piece.col - 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        _ => {}
-                    }
-                } else {
-                    // Move right
-                    match piece.position {
-                        Position::Up => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row + 2, col: piece.col + 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        Position::Down => {
-                            let new_coordinates = Coordinates {
-                                row: piece.row - 2, col: piece.col + 2
-                            };
-                            self.change_is_alive(piece, new_coordinates);
-                        },
-                        _ => {}
-                    }
-                }
+                let land_pos = self.calculate_jump_position(piece, square);
+                self.change_is_alive(piece, land_pos);
             }
         }
 
