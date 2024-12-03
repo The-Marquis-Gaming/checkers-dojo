@@ -2,7 +2,7 @@
 
 import { StarknetConfig,starkscan } from "@starknet-react/core";
 import { PropsWithChildren } from "react";
-import { sepolia,devnet} from "@starknet-react/chains";
+import { sepolia} from "@starknet-react/chains";
 
 
 import {ControllerConnector} from "@cartridge/connector";
@@ -53,14 +53,12 @@ export const connector = new ControllerConnector({
       method: "get_session_id",
     },
   ],
-  rpc: "https://api.cartridge.gg/x/starknet/sepolia",
-  // rpc: "http://localhost:5050",
+  rpc: "https://api.cartridge.gg/x/checkers-controller-1/katana",
 }) as never as Connector;
 
 function provider() {
   return new RpcProvider({
-    nodeUrl: "https://api.cartridge.gg/x/starknet/sepolia",
-    // nodeUrl: "http://localhost:5050",
+    nodeUrl: "https://api.cartridge.gg/x/checkers-controller-1/katana",
   });
 }
 

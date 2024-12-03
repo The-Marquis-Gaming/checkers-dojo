@@ -16,11 +16,17 @@ telegram = "https://t.me/dojoengine"
 default = "checkers_marq"
 
 [env]
-rpc_url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_7"
+# rpc_url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_7"
 # Default account for katana with seed = 0
 account_address = "0x06629d822213166aF3c08dFc6897E3534e3683e0F65285417a7d506Cd6A893a7"
 private_key = "0x0028d4affa7dd0ace592545a6f3b199c422eddb0fe181c820f578c5fdc6825e5"
-#world_address = "0x06171ed98331e849d6084bf2b3e3186a7ddf35574dd68cab4691053ee8ab69d7"  # Uncomment and update this line with your world address.
+world_address = "0x06171ed98331e849d6084bf2b3e3186a7ddf35574dd68cab4691053ee8ab69d7"  # Uncomment and update this line with your world address.
+
+# for slot
+# account_address ="0x6f26a5bb1f94065fff3e3fec051f7e4fd7b5d8c9f421d604c79c16246b3278c"
+# private_key="0x353e66d66075fe5f86213ffb7972c69a5e1e9dd5fc146ce38906811630a2fbe"
+# rpc_url="https://api.cartridge.gg/x/checkers-controller-1/katana"
+# world_address="0x07e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3"
 
 [writers]
 "checkers_marq" = ["checkers_marq-actions"]

@@ -53,8 +53,8 @@ export const DojoContextProvider = ({
                 masterAccount,
                 setupWorld: setupWorld(dojoProvider),
                 // account: {
-                //     ...burnerManagerData,
-                //     account: burnerManagerData.account || masterAccount,
+                    // ...burnerManagerData,
+                    // account: burnerManagerData.account || masterAccount,
                 // },
             }}
         >
