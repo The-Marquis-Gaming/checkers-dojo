@@ -59,6 +59,33 @@ pnpm i
 pnpm dev
 ```
 
+## Cartridge Controller
+To test the connection with the controller, follow these steps:
+
+Use ngrok: ngrok http 5173.
+With this, you will be able to use the connection with the controller.
+
+Related commands for the Katana slot:
+
+```bash
+slot deployments logs checkers-controller-1 katana -f
+slot deployments logs checkers-controller-1 torii -f 
+```
+
+### Related links for the Katana slot:
+
+#### Configuration:
+
+World: 0x7e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3
+RPC: https://api.cartridge.gg/x/checkers-controller-1/katana
+Start Block: 1
+Endpoints:
+
+GRAPHQL: https://api.cartridge.gg/x/checkers-controller-1/torii/graphql
+GRPC: https://api.cartridge.gg/x/checkers-controller-1/torii
+
+
+
 ## Play
 
 After completing the steps above, access the Checkers game by navigating to `http://localhost:3000` in your web browser.
