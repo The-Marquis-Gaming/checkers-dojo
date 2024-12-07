@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.0-rc.1](https://book.dojoengine.org/)**
+- **[Dojo v1.0.2](https://book.dojoengine.org/)**
 
 ---
 
