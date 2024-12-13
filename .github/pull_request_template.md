@@ -1,4 +1,4 @@
-<p align="center"> <img src="https://github.com/zleypner/checkers-dojo/raw/main/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png" alt="CLR-S (2)"> </p>
+<p align="center"> <img src="https://github.com/The-Marquis-Gaming/checkers-dojo/raw/main/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png" alt="CLR-S (2)"> </p>
 
 # Pull Request | Checkers
 
