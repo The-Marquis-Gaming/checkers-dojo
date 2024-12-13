@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.1](https://book.dojoengine.org/)**
+- **[Dojo v1.0.2](https://book.dojoengine.org/)**
 
 ---
 
@@ -58,6 +58,32 @@ cd client
 pnpm i
 pnpm dev
 ```
+
+## Cartridge Controller
+
+To test the connection with the controller, follow these steps:
+
+Use ngrok: ngrok http 5173.
+With this, you will be able to use the connection with the controller.
+
+Related commands for the Katana slot:
+
+```bash
+slot deployments logs checkers-controller-1 katana -f
+slot deployments logs checkers-controller-1 torii -f 
+```
+
+### Related links for the Katana slot
+
+#### Configuration
+
+World: 0x7e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3
+RPC: <https://api.cartridge.gg/x/checkers-controller-1/katana>
+Start Block: 1
+Endpoints:
+
+GRAPHQL: <https://api.cartridge.gg/x/checkers-controller-1/torii/graphql>
+GRPC: <https://api.cartridge.gg/x/checkers-controller-1/torii>
 
 ## Play
 

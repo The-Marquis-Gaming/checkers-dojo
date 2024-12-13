@@ -7,9 +7,9 @@ version = "1.0.1"
 sierra-replace-ids = true
 
 [scripts]
-migrate = "sozo build && sozo migrate"                     
-spawn = "sozo execute dojo_starter-actions spawn --wait"    
-move = "sozo execute dojo_starter-actions move -c 1 --wait" 
+migrate = "sozo build && sozo migrate"
+spawn = "sozo execute dojo_starter-actions spawn --wait"
+move = "sozo execute dojo_starter-actions move -c 1 --wait"
 
 [dependencies]
 dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.1" }
@@ -19,3 +19,10 @@ build-external-contracts = ["dojo::world::world_contract::world"]
 
 [dev-dependencies]
 dojo_cairo_test = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.1" }
+
+# for slot
+# [tool.dojo.env]
+# account_address ="0x6f26a5bb1f94065fff3e3fec051f7e4fd7b5d8c9f421d604c79c16246b3278c"
+# private_key="0x353e66d66075fe5f86213ffb7972c69a5e1e9dd5fc146ce38906811630a2fbe"
+# rpc_url="https://api.cartridge.gg/x/checkers-controller-1/katana"
+# world_address="0x07e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3"

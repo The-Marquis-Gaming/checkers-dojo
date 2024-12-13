@@ -4,8 +4,7 @@ import CreateBurner from "../connector/CreateBurner";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import ControllerButton from '../connector/ControllerButton';
-import { useSystemCalls } from "../hooks/useSystemCalls";
-import { useDojo } from "../hooks/useDojo";
+// import { useDojo } from "../hooks/useDojo";
 
 import LoadingCreate from "../assets/LoadingCreate.png";
 import ChoicePlayer from "../assets/ChoicePlayer.png";
@@ -17,10 +16,12 @@ import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Player3 from "../assets/Player3_0.png";
 import Player4 from "../assets/Player4_0.png";
+import { useAccount } from '@starknet-react/core';
 //TODO:VER DE QUE HACER CON ESTA PAG
 
 function CreateGame({ }: { sdk: SDK<typeof schema> }) {
-  const { account } = useDojo();
+  // const { account } = useDojo();
+  const account = useAccount();
   // const { createLobby } = useSystemCalls();
   const navigate = useNavigate();
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);

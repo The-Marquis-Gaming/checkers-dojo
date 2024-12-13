@@ -10,10 +10,11 @@ export const useDojo = () => {
         );
     }
 
-    const { account, ...setup } = context;
+    // const { account, ...setup } = context;
+    const {...setup} = context;
 
     return {
         setup,
-        account,
+        // account,
     };
 };

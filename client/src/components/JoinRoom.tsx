@@ -3,7 +3,6 @@ import CreateBurner from "../connector/CreateBurner.tsx";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 // import ControllerButton from '../connector/ControllerButton.tsx';
-import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
 
 import LoadingRoom from "../assets/LoadingCreate.png";
@@ -11,19 +10,22 @@ import InitGameBackground from "../assets/InitGameBackground.png";
 import Return from "../assets/Return.png";
 import JoinGameRectangule from "../assets/JoinGameRectangule.png";
 import ConfirmJoin from "../assets/ConfirmJoin.png";
+import { useAccount } from '@starknet-react/core';
+import { Account } from 'starknet';
 
 function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
     const {
-      account: { account },
+      // account: { account },
       setup: { setupWorld },
     } = useDojo();
+    const {account} = useAccount();
   const navigate = useNavigate();
 
   const joinRoom = async () => {
     try {
       if (account) {
         //TODO:sacar todas las funciones spawn del front
-        await(await setupWorld.actions).joinLobby(account, 0);
+        await(await setupWorld.actions).joinLobby((account as Account), 0);
         navigate("/creategame");
       } else {
         console.warn("Cuenta no conectada");
