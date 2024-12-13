@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 <p align="center"> <img src="https://github.com/The-Marquis-Gaming/checkers-dojo/raw/main/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png" alt="CLR-S (2)"> </p>
+=======
+<p align="center"> <img src="# with '#' will be ignored, and an empty message aborts the commit.
+#
+" alt="CLR-S (2)"> </p>
+>>>>>>> 1dc30bd30016dcea733dc6f9a7b0ef91d8c978a8
 
 # Pull Request | Checkers
 
