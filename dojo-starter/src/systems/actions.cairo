@@ -1,6 +1,6 @@
-use dojo_starter::models::Piece;
-use dojo_starter::models::Coordinates;
-use dojo_starter::models::Position;
+use dojo_starter::models::piece::Piece;
+use dojo_starter::models::coordinates::Coordinates;
+use dojo_starter::models::position::Position;
 use starknet::ContractAddress;
 
 // define the interface
@@ -22,9 +22,15 @@ trait IActions<T> {
 pub mod actions {
     use super::IActions;
     use starknet::{ContractAddress, get_caller_address};
+
     use dojo_starter::models::{
-        Piece, Coordinates, Position, Session, Player, Counter, CounterTrait
-    };
+        coordinates::Coordinates,
+        position::Position,
+        piece::Piece,
+        session::Session,
+        player::Player,
+        counter::{Counter, CounterTrait},
+    };   
 
     use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
@@ -39,6 +45,7 @@ pub mod actions {
         pub row: u8,
         pub col: u8,
     }
+    
     #[derive(Copy, Drop, Serde)]
     #[dojo::event]
     pub struct Killed {

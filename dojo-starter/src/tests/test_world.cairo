@@ -11,11 +11,17 @@ mod tests {
     };
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
+
     use dojo_starter::models::{
-        Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player, Counter,
-        m_Counter
+        piece::{Piece, m_Piece},
+        coordinates::Coordinates,
+        position::Position,
+        session::{Session, m_Session},
+        player::{Player, m_Player},
+        counter::{Counter, m_Counter}
     };
-    use dojo_starter::models::CounterTrait;
+
+    use dojo_starter::models::counter::CounterTrait;
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
