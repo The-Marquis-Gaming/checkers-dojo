@@ -1,8 +1,5 @@
 # Issue | Checkers
 
-<p align="center">
-  <img src="https://github.com/The-Marquis-Gaming/checkers-dojo/raw/main/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png" alt="Checkers Banner">
-</p>
 
 ## 1. Type of Issue
 
