@@ -1,6 +1,6 @@
-use dojo_starter::models::Piece;
-use dojo_starter::models::Coordinates;
-use dojo_starter::models::Position;
+use dojo_starter::models::piece::Piece;
+use dojo_starter::models::coordinates::Coordinates;
+use dojo_starter::models::position::Position;
 use starknet::ContractAddress;
 
 // define the interface
@@ -22,54 +22,22 @@ trait IActions<T> {
 pub mod actions {
     use super::IActions;
     use starknet::{ContractAddress, get_caller_address};
+
     use dojo_starter::models::{
-        Piece, Coordinates, Position, Session, Player, Counter, CounterTrait
-    };
+        king::King,
+        moved::Moved,
+        killed::Killed,
+        winner::Winner,
+        coordinates::Coordinates,
+        position::{Position, PositionTrait},
+        piece::Piece,
+        session::Session,
+        player::Player,
+        counter::{Counter, CounterTrait},
+    };   
 
     use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
-
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct Moved {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub row: u8,
-        pub col: u8,
-    }
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct Killed {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub row: u8,
-        pub col: u8,
-    }
-
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct Winner {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub position: Position,
-    }
-
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct King {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub row: u8,
-        pub col: u8,
-    }
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {

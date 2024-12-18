@@ -11,11 +11,21 @@ mod tests {
     };
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
+
     use dojo_starter::models::{
-        Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player, Counter,
-        m_Counter
+        piece::{Piece, m_Piece},
+        coordinates::Coordinates,
+        position::Position,
+        session::{Session, m_Session},
+        player::{Player, m_Player},
+        counter::{Counter, m_Counter},
+        king::{King, e_King},
+        moved::{Moved, e_Moved},
+        killed::{Killed, e_Killed},
+        winner::{Winner, e_Winner},
     };
-    use dojo_starter::models::CounterTrait;
+
+    use dojo_starter::models::counter::CounterTrait;
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
@@ -24,10 +34,10 @@ mod tests {
                 TestResource::Model(m_Session::TEST_CLASS_HASH),
                 TestResource::Model(m_Player::TEST_CLASS_HASH),
                 TestResource::Model(m_Counter::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_Moved::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_Killed::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_King::TEST_CLASS_HASH),
+                TestResource::Event(e_King::TEST_CLASS_HASH),
+                TestResource::Event(e_Moved::TEST_CLASS_HASH),
+                TestResource::Event(e_Killed::TEST_CLASS_HASH),
+                TestResource::Event(e_Winner::TEST_CLASS_HASH),
                 TestResource::Contract(actions::TEST_CLASS_HASH)
             ].span()
         };
