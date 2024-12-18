@@ -25,7 +25,7 @@ pub mod actions {
 
     use dojo_starter::models::{
         coordinates::Coordinates,
-        position::Position,
+        position::{Position, PositionTrait},
         piece::Piece,
         session::Session,
         player::Player,
