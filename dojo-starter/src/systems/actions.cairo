@@ -24,6 +24,10 @@ pub mod actions {
     use starknet::{ContractAddress, get_caller_address};
 
     use dojo_starter::models::{
+        king::King,
+        moved::Moved,
+        killed::Killed,
+        winner::Winner,
         coordinates::Coordinates,
         position::{Position, PositionTrait},
         piece::Piece,
@@ -34,49 +38,6 @@ pub mod actions {
 
     use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
-
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct Moved {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub row: u8,
-        pub col: u8,
-    }
-    
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct Killed {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub row: u8,
-        pub col: u8,
-    }
-
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct Winner {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub position: Position,
-    }
-
-    #[derive(Copy, Drop, Serde)]
-    #[dojo::event]
-    pub struct King {
-        #[key]
-        pub session_id: u64,
-        #[key]
-        pub player: ContractAddress,
-        pub row: u8,
-        pub col: u8,
-    }
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {

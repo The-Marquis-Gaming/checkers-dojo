@@ -9,6 +9,10 @@ mod models {
     mod session;
     mod counter;
     mod coordinates;
+    mod winner;
+    mod king;
+    mod killed;
+    mod moved;
 }
 
 mod tests {

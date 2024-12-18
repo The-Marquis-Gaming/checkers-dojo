@@ -18,7 +18,11 @@ mod tests {
         position::Position,
         session::{Session, m_Session},
         player::{Player, m_Player},
-        counter::{Counter, m_Counter}
+        counter::{Counter, m_Counter},
+        king::{King, e_King},
+        moved::{Moved, e_Moved},
+        killed::{Killed, e_Killed},
+        winner::{Winner, e_Winner},
     };
 
     use dojo_starter::models::counter::CounterTrait;
@@ -30,10 +34,10 @@ mod tests {
                 TestResource::Model(m_Session::TEST_CLASS_HASH),
                 TestResource::Model(m_Player::TEST_CLASS_HASH),
                 TestResource::Model(m_Counter::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_Moved::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_Killed::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
-                TestResource::Event(actions::e_King::TEST_CLASS_HASH),
+                TestResource::Event(e_King::TEST_CLASS_HASH),
+                TestResource::Event(e_Moved::TEST_CLASS_HASH),
+                TestResource::Event(e_Killed::TEST_CLASS_HASH),
+                TestResource::Event(e_Winner::TEST_CLASS_HASH),
                 TestResource::Contract(actions::TEST_CLASS_HASH)
             ].span()
         };
