@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import CreateBurner from "../connector/CreateBurner.tsx";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 // import ControllerButton from '../connector/ControllerButton.tsx';
@@ -12,6 +11,7 @@ import JoinGameRectangule from "../assets/JoinGameRectangule.png";
 import ConfirmJoin from "../assets/ConfirmJoin.png";
 import { useAccount } from '@starknet-react/core';
 import { Account } from 'starknet';
+import ControllerButton from '../connector/ControllerButton.tsx';
 
 function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
     const {
@@ -62,7 +62,7 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
       {/* Botón de "Return" */}
       <button
         onClick={() => {
-          window.location.href = '/initgame'; 
+          window.location.href = '/'; 
         }}
         style={{
           position: 'absolute',
@@ -95,8 +95,7 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
-        {/* <ControllerButton /> */}
-        <CreateBurner />
+        <ControllerButton />
       </div>
 
       {/* Texto "Join Room" sobre la barra de carga */}

@@ -17,7 +17,6 @@ const ControllerButton: React.FC = () => {
     (connector as any).username()?.then((name: string) => {
       setUserName(name), setIsConnected(true);
     });
-    console.log(userName, "USERnAaaME", address, "addres");
   }, [address, connector]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateBurner from "../connector/CreateBurner";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import ControllerButton from '../connector/ControllerButton';
+//this can be use for local development
 // import { useDojo } from "../hooks/useDojo";
+// import CreateBurner from "../connector/CreateBurner";
 
 import LoadingCreate from "../assets/LoadingCreate.png";
 import ChoicePlayer from "../assets/ChoicePlayer.png";
@@ -17,7 +18,7 @@ import Player2 from "../assets/Player2_0.png";
 import Player3 from "../assets/Player3_0.png";
 import Player4 from "../assets/Player4_0.png";
 import { useAccount } from '@starknet-react/core';
-//TODO:VER DE QUE HACER CON ESTA PAG
+
 
 function CreateGame({ }: { sdk: SDK<typeof schema> }) {
   // const { account } = useDojo();
@@ -106,7 +107,6 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <ControllerButton />
-        <CreateBurner />
       </div>
 
       {/* Texto "Join Room" sobre la barra de carga */}

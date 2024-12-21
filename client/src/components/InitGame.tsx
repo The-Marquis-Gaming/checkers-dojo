@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateBurner from "../connector/CreateBurner";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
@@ -117,7 +116,6 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <ControllerButton />
-        <CreateBurner />
       </div>
 
       {/* Botón de "Crear Juego" */}

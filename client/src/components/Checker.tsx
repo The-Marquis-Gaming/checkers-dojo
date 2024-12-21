@@ -15,7 +15,6 @@ import QueenOrange from "../assets/QueenOrange.png";
 import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Return from "../assets/Return.png";
-import CreateBurner from "../connector/CreateBurner";
 import { useAccount } from "@starknet-react/core";
 import { Account } from "starknet";
 
@@ -39,12 +38,18 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
   
 
-  const { initialBlackPieces, initialOrangePieces } = createInitialPieces(
-    (account as Account)?.address
-  );
-  const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
-  const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
+  const [upPieces, setUpPieces] = useState<PieceUI[]>([]);
+  const [downPieces, setDownPieces] = useState<PieceUI[]>([]);
 
+    useEffect(() => {
+      if (account?.address) {
+        const { initialBlackPieces, initialOrangePieces } = createInitialPieces(
+          account.address
+        );
+        setUpPieces(initialBlackPieces);
+        setDownPieces(initialOrangePieces);
+      }
+    }, [account]);
   const cellSize = 88;
 
 
@@ -301,7 +306,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
     } else {
       setDownPieces(updatedPieces);
     }
-
     try {
       if (account) {
         const movedPiece = await(await setupWorld.actions).movePiece(
@@ -359,7 +363,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <ControllerButton />
-        <CreateBurner />
       </div>
       
       {isGameOver && <GameOver />}
@@ -439,7 +442,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         </div>
         <button
           onClick={() => {
-            window.location.href = '/initgame';
+            window.location.href = '/';
           }}
           style={{
             position: 'absolute',
