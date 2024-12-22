@@ -72,8 +72,6 @@ Related commands for the Katana slot:
 slot deployments logs checkers-controller-1 katana -f
 slot deployments logs checkers-controller-1 torii -f 
 
-//second
-`slot deployments logs checkers-slot katana -f`
 ```
 
 ### Related links for the Katana slot
