@@ -4,7 +4,7 @@ import CreateBurner from "../connector/CreateBurner";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
-import { useDojo } from "../hooks/useDojo.tsx";
+// import { useDojo } from "../hooks/useDojo.tsx";
 import ControllerButton from '../connector/ControllerButton';
 
 import InitGameBackground from "../assets/InitGameBackground.png";
@@ -14,14 +14,15 @@ import JoinGame from "../assets/JoinGame.png";
 import JoinGame2 from "../assets/JoinGame2.png";
 import Return from "../assets/Return.png";
 import Title from '../assets/Title.png';
+import { useAccount } from '@starknet-react/core';
 
 export const useDojoStore = createDojoStore<typeof schema>();
 
 function InitGame({ }: { sdk: SDK<typeof schema> }) {
-  const { account } = useDojo();
+  // const { account } = useDojo();
+  const {account} = useAccount();
   const { getSessionId,createLobby } = useSystemCalls();
   const navigate = useNavigate();
-
   const [isHoveredCreate, setIsHoveredCreate] = useState(false);
   const [isHoveredJoin, setIsHoveredJoin] = useState(false);
 
