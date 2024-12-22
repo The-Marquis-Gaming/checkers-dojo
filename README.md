@@ -63,10 +63,41 @@ pnpm dev
 
 To test the connection with the controller, follow these steps:
 
-Use ngrok: ngrok http 5173.
+### Configure mkcert for HTTPS
+
+You can configure mkcert to enable HTTPS and work with the controller directly, without requiring ngrok. Follow the steps below based on your operating system:
+
+#### Windows
+
+For Windows installation and configuration of mkcert, follow the guide in the link below:\
+[mkcert Windows Setup Guide](https://github.com/FiloSottile/mkcert/issues/357#issuecomment-1466762021)
+
+#### Linux
+
+For Linux installation and configuration of mkcert, follow the official guidelines provided in these links:
+
+-   [Linux Installation Steps](https://github.com/FiloSottile/mkcert#linux)
+-   [mkcert Installation Guide](https://github.com/FiloSottile/mkcert?tab=readme-ov-file#mkcert)
+
+These guides provide detailed steps to set up mkcert on various Linux distributions.
+
+#### Check HTTPS Security in the Browser
+
+-   After completing the mkcert configuration, visit your local site.
+-   The browser should display **"This page is secure (valid HTTPS)"**.
+-   If the page shows as **insecure**, the mkcert configuration is incorrect.
+
+  
+### Alternative to mkcert: Use ngrok
+
+Run the following command to use ngrok:
+```bash
+ngrok http 5173
+```
+
 With this, you will be able to use the connection with the controller.
 
-Related commands for the Katana slot:
+### Related commands for the Katana slot:
 
 ```bash
 slot deployments logs checkers-controller-1 katana -f
