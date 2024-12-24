@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateBurner from "../connector/CreateBurner";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
@@ -34,10 +33,10 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
       console.log(lobby, "createLobby", id, "id");
         return id
       } else {
-        console.warn("Cuenta no conectada");
+        console.warn("Account not connected");
       }
     } catch (error) {
-      console.error("Error al crear el juego:", error);
+      console.error("Error creating the game:", error);
     } finally {
       navigate("/joinroom");
     }
@@ -105,7 +104,6 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
         />
       </button>
 
-      {/* Sección superior derecha con CreateBurner y ControllerButton */}
       <div
         style={{
           position: 'absolute',
@@ -117,10 +115,9 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <ControllerButton />
-        <CreateBurner />
       </div>
 
-      {/* Botón de "Crear Juego" */}
+      {/* Button to create game */}
       <img
         src={isHoveredCreate ? CreateGame2 : CreateGame}
         alt={account ? "Crear Juego" : "Conectar cuenta"}
@@ -137,21 +134,21 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
           cursor: account ? 'pointer' : 'not-allowed',
           transition: 'transform 0.2s',
-          opacity: account ? 1 : 0.5, // Reduce la opacidad si no hay cuenta conectada
+          opacity: account ? 1 : 0.5,
         }}
       />
 
-      {/* Botón de "Unirse al Juego" */}
+      {/* Button to join game */}
       <img
         src={isHoveredJoin ? JoinGame2 : JoinGame}
-        alt="Unirse al Juego"
+        alt="join game"
         onMouseEnter={() => setIsHoveredJoin(true)}
         onMouseLeave={() => setIsHoveredJoin(false)}
         style={{
           position: 'absolute',
-          top: '60%', // Ajustado para que esté debajo del botón de "Crear Juego"
+          top: '60%',
           left: '50%',
-          transform: `translate(-50%, -50%) scale(${isHoveredJoin ? 1.3 : 1})`, // Zoom hacia adelante
+          transform: `translate(-50%, -50%) scale(${isHoveredJoin ? 1.3 : 1})`,
           width: '700px',
           height: 'auto',
           zIndex: 2,

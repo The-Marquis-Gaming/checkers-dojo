@@ -17,7 +17,6 @@ const ControllerButton: React.FC = () => {
     (connector as any).username()?.then((name: string) => {
       setUserName(name), setIsConnected(true);
     });
-    console.log(userName, "USERnAaaME", address, "addres");
   }, [address, connector]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,14 +25,12 @@ const ControllerButton: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Recortar la dirección de la cuenta para una visualización más clara
   const slicedAddress = address
     ? `${address.slice(0, 6)}...${address.slice(-4)}`
-    : "Conectar";
+    : "Connect";
 
   return (
     <div className="relative">
-      {/* Botón principal */}
       <button
         onClick={
           isConnected ? toggleMenu : () => connect({ connector })
@@ -62,7 +59,7 @@ const ControllerButton: React.FC = () => {
             lineHeight: "45px",
             fontWeight: "bold",
           }}>
-          {isConnected ? userName || "Conectado" : "Conectar"}
+          {isConnected ? userName || "Connected" : "Connect"}
         </span>
         <span
           className={`transform transition-transform duration-300 ${
@@ -73,7 +70,6 @@ const ControllerButton: React.FC = () => {
         </span>
       </button>
 
-      {/* Menú desplegable */}
       {isMenuOpen && isConnected && (
         <div
           className="absolute mt-2 p-4 rounded-md shadow-lg"
@@ -85,7 +81,7 @@ const ControllerButton: React.FC = () => {
           }}>
           <div className="flex justify-between items-center mb-2">
             <p className="text-sm">
-              <strong>Usuario:</strong>{" "}
+              <strong>User:</strong>{" "}
               <span style={{ fontWeight: "normal" }}>
                 {userName || "Sin nombre"}
               </span>
@@ -94,7 +90,7 @@ const ControllerButton: React.FC = () => {
 
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold">
-              <strong>Dirección:</strong>{" "}
+              <strong>Address:</strong>{" "}
               <span style={{ fontWeight: "normal" }}>
                 {slicedAddress || "Sin nombre"}
               </span>
@@ -122,7 +118,7 @@ const ControllerButton: React.FC = () => {
           <button
             onClick={() => {disconnect(), setIsConnected(false),toggleMenu()}}
             className="w-full bg-[#520066] hover:bg-[#6A0080] text-white font-bold py-2 rounded-md transition duration-300 ease-in-out">
-            Desconectar
+            Disconnect
           </button>
         </div>
       )}

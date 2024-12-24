@@ -102,6 +102,7 @@ With this, you will be able to use the connection with the controller.
 ```bash
 slot deployments logs checkers-controller-1 katana -f
 slot deployments logs checkers-controller-1 torii -f 
+
 ```
 
 ### Related links for the Katana slot
