@@ -17,6 +17,7 @@ import Player2 from "../assets/Player2_0.png";
 import Return from "../assets/Return.png";
 import { useAccount } from "@starknet-react/core";
 import { Account } from "starknet";
+import { Piece } from "../models.gen";
 
 export const useDojoStore = createDojoStore<typeof schema>();
 
@@ -253,7 +254,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         await (await setupWorld.actions).canChoosePiece((account as Account), piece.piece.position, { row, col }, 0);
       }
     } catch (error) {
-      console.error("Error verificando la pieza seleccionada:", error);
+      console.error("Error in choose piece:", error);
     }
   };
 
@@ -262,7 +263,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
     const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
     if (!selectedPiece) return;
-    console.log("Moviendo la pieza:", selectedPiece);
+    console.log("piece moved:", selectedPiece);
     const piecesToUpdate = selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
     const enemyPieces = selectedPiece.piece.position === Position.Up ? downPieces : upPieces;
 
@@ -310,16 +311,16 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       if (account) {
         const movedPiece = await(await setupWorld.actions).movePiece(
           (account as Account),
-          selectedPiece.piece,
+          selectedPiece.piece as Piece,
           move
         );
         console.log(
-          movedPiece.transaction_hash,
+          (movedPiece as any).transaction_hash,
           "movePiece transaction_hash success"
         );
       }
     } catch (error) {
-      console.error("Error al mover la pieza:", error);
+      console.error("Error moving the piece:", error);
     }
 
 
@@ -351,7 +352,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
       <ScoreCounter orangeScore={orangeScore} blackScore={blackScore} totalOrangePieces={upPieces.length} totalBlackPieces={downPieces.length} />
    
-    {/* CreateBurner & ControllerButton */}
     <div
         style={{
           position: 'absolute',

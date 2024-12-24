@@ -33,10 +33,10 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
        
         navigate('/checkers');
       } else {
-        console.warn("Cuenta no conectada");
+        console.warn("Account not connected");
       }
     } catch (error) {
-      console.error("Error al crear el juego:", error);
+      console.error("Error creating the game:", error);
     }
   };
 
@@ -55,94 +55,87 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         height: "100vh",
         position: "relative",
         overflow: "hidden",
-      }}
-    >
-      {/* Filtro de fondo oscuro */}
+      }}>
+      {/* Dark background filter */}
       <div
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
           zIndex: 0,
         }}
       />
 
-      {/* Botón de "Return" */}
+      {/* Return button  */}
       <button
         onClick={() => {
-          window.location.href = '/joinroom'; 
+          window.location.href = "/joinroom";
         }}
         style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
+          position: "absolute",
+          top: "20px",
+          left: "20px",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
           zIndex: 2,
-        }}
-      >
+        }}>
         <img
           src={Return}
           alt="Return"
           style={{
-            width: '50px',
-            height: '50px',
+            width: "50px",
+            height: "50px",
           }}
         />
       </button>
 
-      {/* Sección superior derecha con CreateBurner y ControllerButton */}
       <div
         style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          display: 'flex',
-          gap: '20px',
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          display: "flex",
+          gap: "20px",
           zIndex: 2,
-        }}
-      >
+        }}>
         <ControllerButton />
       </div>
 
-      {/* Texto "Join Room" sobre la barra de carga */}
       <div
         style={{
-          position: 'absolute',
-          top: '150px',
-          left: '16%',
-          transform: 'translateX(-50%)',
-          color: 'white',
-          fontSize: '32px',
-          fontWeight: 'bold',
+          position: "absolute",
+          top: "150px",
+          left: "16%",
+          transform: "translateX(-50%)",
+          color: "white",
+          fontSize: "32px",
+          fontWeight: "bold",
           zIndex: 5,
-        }}
-      >
+        }}>
         JOIN ROOM
       </div>
 
-      {/* Barra de carga */}
+      {/* Loading bar */}
       <div
         style={{
-          position: 'absolute',
-          top: '200px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '1500px',
-          height: '10px',
+          position: "absolute",
+          top: "200px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "1500px",
+          height: "10px",
           zIndex: 5,
-        }}
-      >
+        }}>
         <img
           src={LoadingCreate}
           alt="Cargando"
           style={{
-            width: '100%',
-            height: '100%',
+            width: "100%",
+            height: "100%",
           }}
         />
       </div>
@@ -150,86 +143,82 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
       {/* ChoicePlayer */}
       <div
         style={{
-          position: 'absolute',
-          top: '390px',
-          left: '46%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          position: "absolute",
+          top: "390px",
+          left: "46%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           zIndex: 5,
-        }}
-      >
+        }}>
         <span
           style={{
-            color: 'white',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            marginBottom: '-40px',
-          }}
-        >
+            color: "white",
+            fontSize: "24px",
+            fontWeight: "bold",
+            marginBottom: "-40px",
+          }}>
           CHOICE AVATAR
         </span>
         <img
           src={ChoicePlayer}
           alt="Choice Player"
           style={{
-            width: '300px',
-            height: '40px',
+            width: "300px",
+            height: "40px",
           }}
         />
       </div>
 
-      {/* Selección de jugadores */}
+      {/* Character selector */}
       <div
         style={{
-          position: 'absolute',
-          top: '450px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: '20px',
+          position: "absolute",
+          top: "450px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          gap: "20px",
           zIndex: 2,
-        }}
-      >
+        }}>
         {playerImages.map((playerImage, index) => (
           <div
             key={index}
             onClick={() => handlePlayerSelect(index)}
             style={{
-              width: '100px',
-              height: '100px',
-              borderRadius: '10px',
-              border: `3px solid ${selectedPlayer === index ? '#EE7921' : '#520066'
-                }`,
+              width: "100px",
+              height: "100px",
+              borderRadius: "10px",
+              border: `3px solid ${
+                selectedPlayer === index ? "#EE7921" : "#520066"
+              }`,
               backgroundImage: `url(${playerImage})`,
-              backgroundSize: 'cover',
-              cursor: 'pointer',
+              backgroundSize: "cover",
+              cursor: "pointer",
             }}
           />
         ))}
       </div>
 
-      {/* Botón de "Create Game" */}
+      {/* Button of "Create Game" */}
       <button
         onClick={handleCreateRoom}
         style={{
-          position: 'absolute',
-          bottom: '200px',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          position: "absolute",
+          bottom: "200px",
+          left: "50%",
+          transform: "translateX(-50%)",
           backgroundImage: `url(${ButtonCreate})`,
-          backgroundSize: 'cover',
-          color: 'white',
-          padding: '46px 279px',
-          borderRadius: '5px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          border: 'none',
+          backgroundSize: "cover",
+          color: "white",
+          padding: "46px 279px",
+          borderRadius: "5px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          border: "none",
           zIndex: 2,
-        }}
-      >
-      </button>
+        }}></button>
     </div>
   );
 }

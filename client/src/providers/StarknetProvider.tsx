@@ -12,7 +12,6 @@ import manifest from "../../../dojo-starter/manifest_slot_1.json";
 import { getContractByName } from "@dojoengine/core";
 
 
-// Configuramos el conector
 
 const checkersContract = getContractByName(manifest, "checkers_marq", "actions")?.address;
 export const connector = new ControllerConnector({
@@ -52,8 +51,6 @@ function provider() {
 }
 
 export function StarknetProvider({ children }: PropsWithChildren) {
-  console.log(checkersContract, "first contract");
-
   return (
     <StarknetConfig
       autoConnect

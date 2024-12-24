@@ -19,6 +19,7 @@
     "@dojoengine/torii-wasm": "1.0.0-alpha.24",
     "@dojoengine/utils": "1.0.0-alpha.24",
     "@starknet-react/core": "^3.0.3",
+    "@starknet-react/chains": "^3.1.0",
     "@types/uuid": "^10.0.0",
     "immer": "^10.1.1",
     "react": "^18.3.1",
