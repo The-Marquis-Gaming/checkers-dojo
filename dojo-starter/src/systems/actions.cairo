@@ -9,7 +9,7 @@ trait IActions<T> {
     fn create_lobby(ref self: T) -> u64;
     fn join_lobby(ref self: T, session_id: u64);
     fn can_choose_piece(
-        ref self: T, position: Position, coordinates_position: Coordinates, session_id: u64
+        ref self: T, position: Position, coordinates_position: Coordinates, session_id: u64,
     ) -> bool;
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Coordinates);
 
@@ -23,10 +23,10 @@ pub mod actions {
     use super::IActions;
     use starknet::{ContractAddress, get_caller_address};
     use dojo_starter::models::{
-        Piece, Coordinates, Position, Session, Player, Counter, CounterTrait
+        Piece, Coordinates, Position, Session, Player, Counter, CounterTrait,
     };
 
-    use dojo::model::{ModelStorage, ModelValueStorage};
+    use dojo::model::{modeltorage, modelValueStorage};
     use dojo::event::EventStorage;
 
     #[derive(Copy, Drop, Serde)]
@@ -83,14 +83,14 @@ pub mod actions {
             // Write the counter back to the world
             world.write_model(@session_counter);
 
-            let session = Session {
+            let session = Session::new(
                 session_id,
-                player_1: player,
-                player_2: starknet::contract_address_const::<0x0>(),
-                turn: 0,
-                winner: starknet::contract_address_const::<0x0>(),
-                state: 0,
-            };
+                player,
+                starknet::contract_address_const::<0x0>(),
+                0,
+                starknet::contract_address_const::<0x0>(),
+                0,
+            );
             world.write_model(@session);
 
             // Initialize the pieces for the session
@@ -116,7 +116,7 @@ pub mod actions {
             ref self: ContractState,
             position: Position,
             coordinates_position: Coordinates,
-            session_id: u64
+            session_id: u64,
         ) -> bool {
             let mut world = self.world_default();
 
@@ -155,7 +155,7 @@ pub mod actions {
 
         // Implementation of the move function for the ContractState struct.
         fn move_piece(
-            ref self: ContractState, current_piece: Piece, new_coordinates_position: Coordinates
+            ref self: ContractState, current_piece: Piece, new_coordinates_position: Coordinates,
         ) {
             // Get the address of the current caller, possibly the player's address.
             let mut world = self.world_default();
@@ -177,11 +177,11 @@ pub mod actions {
 
             // Get updated position & target square
             let updated_pieces_keys: Array<(u64, u8, u8)> = array![
-                (session_id, current_piece.row, current_piece.col), 
+                (session_id, current_piece.row, current_piece.col),
                 (session_id, square.row, square.col),
             ];
             let updated_pieces: Array<Piece> = world.read_models(updated_pieces_keys.span());
-            
+
             // Conditions to check for new jump:
             // - Move caused a piece to be eaten (jump done)
             // - Move did not cause a promotion to king
@@ -190,10 +190,10 @@ pub mod actions {
                 // Get jump landing position
                 let land_position = self.calculate_jump_position(current_piece, square);
                 let land_piece: Piece = world.read_model((session_id, land_position));
-                
+
                 // Check for jumps if status didn't change
                 if current_piece.is_king == land_piece.is_king {
-                    self.is_consecutive_jump_possible(land_piece) 
+                    self.is_consecutive_jump_possible(land_piece)
                 } else {
                     false
                 }
@@ -226,9 +226,8 @@ pub mod actions {
         fn world_default(self: @ContractState) -> dojo::world::WorldStorage {
             self.world(@"checkers_marq")
         }
-
         fn spawn(
-            ref self: ContractState, player: ContractAddress, position: Position, session_id: u64
+            ref self: ContractState, player: ContractAddress, position: Position, session_id: u64,
         ) {
             let mut world = self.world_default();
             if position == Position::Up {
@@ -237,7 +236,7 @@ pub mod actions {
                 self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
             }
             // Assign remaining pieces to player
-            let player_model = Player { player: player, remaining_pieces: 12, };
+            let player_model = Player::new(player, 12);
             world.write_model(@player_model);
         }
 
@@ -247,7 +246,7 @@ pub mod actions {
             start_col: u8,
             row_step: u8,
             col_step: u8,
-            session_id: u64
+            session_id: u64,
         ) -> bool {
             let mut row = start_row;
             let mut col = start_col;
@@ -258,7 +257,7 @@ pub mod actions {
                 row += row_step;
                 col += col_step;
 
-                let valid = self.check_is_valid_position(Coordinates { row, col });
+                let valid = self.check_is_valid_position(Coordinates::new(row, col));
 
                 if valid {
                     let target_square: Piece = world.read_model((session_id, row, col));
@@ -288,9 +287,7 @@ pub mod actions {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
                 while col < 8 {
-                    let piece = Piece {
-                        session_id, row, col, player, position, is_king: false, is_alive: true,
-                    };
+                    let piece = Piece::new(session_id, player, row, col, position, false, true);
                     pieces.append(@piece);
                     col += 2;
                 };
@@ -306,16 +303,11 @@ pub mod actions {
             while row < 8 {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
+                let player = starknet::contract_address_const::<0x0>();
                 while col < 8 {
-                    let piece = Piece {
-                        session_id,
-                        row,
-                        col,
-                        player: starknet::contract_address_const::<0x0>(),
-                        position: Position::None,
-                        is_king: false,
-                        is_alive: false,
-                    };
+                    let piece = Piece::new(
+                        session_id, player, row, col, Position::None, false, false,
+                    );
                     pieces.append(@piece);
                     col += 2;
                 };
@@ -325,7 +317,7 @@ pub mod actions {
         }
 
         fn change_is_alive(
-            self: @ContractState, mut current_piece: Piece, new_coordinates_position: Coordinates
+            self: @ContractState, mut current_piece: Piece, new_coordinates_position: Coordinates,
         ) {
             let mut world = self.world_default();
             let session_id = current_piece.session_id;
@@ -416,18 +408,14 @@ pub mod actions {
 
                     // Check down-left diagonal
                     if piece_col > 0 {
-                        let target_down_left = Coordinates {
-                            row: piece_row + 1, col: piece_col - 1
-                        };
+                        let target_down_left = Coordinates::new(piece_row + 1, piece_col - 1);
                         let target_square: Piece = world.read_model((session_id, target_down_left));
                         return !target_square.is_alive;
                     }
 
                     // Check down-right diagonal
                     if piece_col + 1 < 8 {
-                        let target_down_right = Coordinates {
-                            row: piece_row + 1, col: piece_col + 1
-                        };
+                        let target_down_right = Coordinates::new(piece_row + 1, piece_col + 1);
                         let target_square: Piece = world
                             .read_model((session_id, target_down_right));
                         return !target_square.is_alive;
@@ -442,22 +430,20 @@ pub mod actions {
 
                     // Check up-left diagonal
                     if piece_col > 0 {
-                        let target_up_left = Coordinates { row: piece_row - 1, col: piece_col - 1 };
+                        let target_up_left = Coordinates::new(piece_row - 1, piece_col - 1);
                         let target_square: Piece = world.read_model((session_id, target_up_left));
                         return !target_square.is_alive;
                     }
 
                     // Check up-right diagonal
                     if piece_col + 1 < 8 {
-                        let target_up_right = Coordinates {
-                            row: piece_row - 1, col: piece_col + 1
-                        };
+                        let target_up_right = Coordinates::new(piece_row - 1, piece_col + 1);
                         let target_square: Piece = world.read_model((session_id, target_up_right));
                         return !target_square.is_alive;
                     }
                     false
                 },
-                _ => false
+                _ => false,
             }
         }
 
@@ -465,11 +451,13 @@ pub mod actions {
             let world = self.world_default();
             let session_id = piece.session_id;
             // Cannot jump over square if piece in square is not alive
-            if !square.is_alive { return false; }
+            if !square.is_alive {
+                return false;
+            }
 
             let land_pos = self.calculate_jump_position(piece, square);
             let land_piece: Piece = world.read_model((session_id, land_pos));
-            
+
             !land_piece.is_alive
         }
 
@@ -483,36 +471,34 @@ pub mod actions {
 
             // Ensure we don't check outbound squares
             if piece.row > 0 && piece.col < 7 {
-                possible_jumps_up_keys.append(
-                    (session_id, Coordinates { row: piece.row - 1, col: piece.col + 1 })
-                ); // UR
+                possible_jumps_up_keys
+                    .append((session_id, Coordinates::new(piece.row - 1, piece.col + 1))); // UR
             }
             if piece.row > 0 && piece.col > 0 {
-                possible_jumps_up_keys.append(
-                    (session_id, Coordinates { row: piece.row - 1, col: piece.col - 1 })
-                ); // UL
+                possible_jumps_up_keys
+                    .append((session_id, Coordinates::new(piece.row - 1, piece.col - 1))); // UL
             }
             if piece.row < 7 && piece.col < 7 {
-                possible_jumps_down_keys.append(
-                    (session_id, Coordinates { row: piece.row + 1, col: piece.col + 1 })
-                ); // DR
+                possible_jumps_down_keys
+                    .append((session_id, Coordinates::new(piece.row + 1, piece.col + 1))); // DR
             }
             if piece.row < 7 && piece.col > 0 {
-                possible_jumps_down_keys.append(
-                    (session_id, Coordinates { row: piece.row + 1, col: piece.col - 1 })
-                ); // DL
+                possible_jumps_down_keys
+                    .append((session_id, Coordinates::new(piece.row + 1, piece.col - 1))); // DL
             }
-            
-            let possible_jumps_up: Array<Piece> = world.read_models(possible_jumps_up_keys.span());
-            let possible_jumps_down: Array<Piece> = world.read_models(possible_jumps_down_keys.span());
 
-            // Check for valid jumps for corresponding direction 
+            let possible_jumps_up: Array<Piece> = world.read_models(possible_jumps_up_keys.span());
+            let possible_jumps_down: Array<Piece> = world
+                .read_models(possible_jumps_down_keys.span());
+
+            // Check for valid jumps for corresponding direction
             // King can jump in both directions
             let mut can_jump_again = false;
             if (piece.position == Position::Down || piece.is_king) {
                 for jump_up in possible_jumps_up {
                     // Check for possible jump. Pieces must be in diferent teams
-                    if (self.is_jump_possible(piece, jump_up) && piece.position != jump_up.position) {
+                    if (self.is_jump_possible(piece, jump_up)
+                        && piece.position != jump_up.position) {
                         can_jump_again = true;
                     }
                 };
@@ -521,7 +507,8 @@ pub mod actions {
             if (piece.position == Position::Up || piece.is_king) {
                 for jump_down in possible_jumps_down {
                     // Check for possible jump. Pieces must be in diferent teams
-                    if (self.is_jump_possible(piece, jump_down) && piece.position != jump_down.position) {
+                    if (self.is_jump_possible(piece, jump_down)
+                        && piece.position != jump_down.position) {
                         can_jump_again = true;
                     }
                 };
@@ -532,7 +519,9 @@ pub mod actions {
 
         /// Calculate jump position for given start position and eaten piece position.
         /// Takes into account all types of pieces (man/king) and all positions.
-        fn calculate_jump_position(self: @ContractState, original: Piece, eaten: Piece) -> Coordinates {
+        fn calculate_jump_position(
+            self: @ContractState, original: Piece, eaten: Piece,
+        ) -> Coordinates {
             // Use signed integers to handle negative values when calculating landing position
             let signed_original_row: i8 = original.row.try_into().unwrap();
             let signed_original_col: i8 = original.col.try_into().unwrap();
@@ -544,7 +533,7 @@ pub mod actions {
 
             assert!(land_row >= 0, "row less than 0");
             assert!(land_col >= 0, "col less than 0");
-            Coordinates { row: land_row.try_into().unwrap(), col: land_col.try_into().unwrap() }
+            Coordinates::new(land_row.try_into().unwrap(), land_col.try_into().unwrap())
         }
 
         fn update_alive_position(ref self: ContractState, mut piece: Piece, mut square: Piece) {
@@ -591,7 +580,7 @@ pub mod actions {
                 self.update_alive_position(piece, square);
             } else {
                 // Get the coordinates of the square and do the swap
-                let coordinates = Coordinates { row: square.row, col: square.col };
+                let coordinates = Coordinates::new(square.row, square.col);
                 self.change_is_alive(piece, coordinates);
             }
         }
@@ -619,3 +608,4 @@ pub mod actions {
         }
     }
 }
+
