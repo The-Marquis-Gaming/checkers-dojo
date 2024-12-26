@@ -1,6 +1,6 @@
-use dojo_starter::models::{Piece, PieceTrait};
-use dojo_starter::models::{Coordinates, CoordinatesTrait};
-use dojo_starter::models::Position;
+use dojo_starter::models::piece::{Piece, PieceTrait};
+use dojo_starter::models::coordinates::{Coordinates, CoordinatesTrait};
+use dojo_starter::models::position::Position;
 use starknet::ContractAddress;
 
 // define the interface
