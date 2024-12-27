@@ -1,0 +1,34 @@
+name: Dojo Contracts CI
+on:
+  push:
+    paths:
+      - ".github/workflows/contracts.yaml"
+      - "dojo-starter/**"
+      - "Scarb.toml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "dojo-starter/**"
+      - "Scarb.toml"
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        node: [lts/*]
+    env:
+      DOJO_VERSION: v1.0.2
+    steps:
+      - uses: actions/checkout@v3
+      - run: curl -L https://install.dojoengine.org | bash
+      - run: /home/runner/.config/.dojo/bin/dojoup -v ${{ env.DOJO_VERSION }}
+      - run: |
+          cd dojo-starter && /home/runner/.config/.dojo/bin/sozo build
+          cd dojo-starter && /home/runner/.config/.dojo/bin/sozo test
+          if [[ `git status --porcelain` ]]; then
+            echo The git repo is dirty
+            echo "Make sure to run \"sozo build\" after changing Scarb.toml"
+            exit 1
+          fi
