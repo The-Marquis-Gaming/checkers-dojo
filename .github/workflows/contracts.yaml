@@ -25,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
+          find .
           echo "Extracted Dojo version: ${{env.DOJO_VERSION}}"
           echo "DOJO_VERSION=$DOJO_VERSION" >> $GITHUB_ENV
       - run: curl -L https://install.dojoengine.org | bash
