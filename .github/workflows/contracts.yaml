@@ -42,4 +42,5 @@ jobs:
           scarb --version
       - name: Check Code Formatting
         run: |
-          cd dojo-starter && /home/runner/.config/.dojo/bin/scarb fmt --check
+          cd dojo-starter 
+          scarb fmt --check
