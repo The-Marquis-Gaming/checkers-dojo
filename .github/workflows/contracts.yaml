@@ -1,8 +1,6 @@
 name: Dojo Contracts CI
 on:
   push:
-    branches:
-      - main
     paths:
       - ".github/workflows/contracts.yaml"
       - "dojo-starter/**"
