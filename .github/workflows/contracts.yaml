@@ -35,3 +35,6 @@ jobs:
             echo "Make sure to run \"sozo build\" after changing Scarb.toml"
             exit 1
           fi
+      - name: Check Code Formatting
+        run: |
+          cd dojo-starter && /home/runner/.config/.dojo/bin/scarb fmt --check
