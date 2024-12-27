@@ -17,7 +17,7 @@ default = "checkers_marq"
 
 [env]
 rpc_url = "http://localhost:5050/"
-# Default account for katana with seed = 0
+# Default account for katana with seed = 0	
 account_address = "0x127fd5f1fe78a71f8bcd1fec63e3fe2f0486b6ecd5c86a0466c3a21fa5cfcec"
 private_key = "0xc5b2fcab997346f3ea1c00b002ecf6f382c5f9c9659a3894eb783c5320f912"
 world_address = "0x376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14f2"
@@ -26,7 +26,7 @@ world_address = "0x376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14
 # account_address ="0x6f26a5bb1f94065fff3e3fec051f7e4fd7b5d8c9f421d604c79c16246b3278c"
 # private_key="0x353e66d66075fe5f86213ffb7972c69a5e1e9dd5fc146ce38906811630a2fbe"
 # rpc_url="https://api.cartridge.gg/x/checkers-controller-1/katana"
-# world_address="0x07e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3"
+# world_address="0x0376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14f2"
 
 
 [writers]

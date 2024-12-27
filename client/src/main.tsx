@@ -41,8 +41,8 @@ async function main() {
           >
           <StarknetProvider>
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/initgame" element={<InitGame sdk={sdk} />} />
+                {/* <Route path="/" element={<Home />} /> */}
+                <Route path="/" element={<InitGame sdk={sdk} />} />
                 <Route path="/joinroom" element={<JoinRoom sdk={sdk} />} />
                 <Route path="/creategame" element={<CreateGame sdk={sdk} />} />
                 <Route path="/checkers" element={<Checker sdk={sdk} />} />
