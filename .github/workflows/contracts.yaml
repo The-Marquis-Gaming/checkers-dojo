@@ -20,15 +20,14 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
         node: [lts/*]
-    env:
-      DOJO_VERSION: $(grep 'dojo =' ./dojo-starter/.tool-versions | awk -F '"' '{print $2}')
     steps:
       - uses: actions/checkout@v3
       - run: |
-          echo "Extracted Dojo version: ${{env.DOJO_VERSION}}"
+          DOJO_VERSION=$(grep 'dojo =' ./dojo-starter/.tool-versions | awk -F '"' '{print $2}')
+          echo "Extracted Dojo version: $DOJO_VERSION"
           echo "DOJO_VERSION=$DOJO_VERSION" >> $GITHUB_ENV
       - run: curl -L https://install.dojoengine.org | bash
-      - run: /home/runner/.config/.dojo/bin/dojoup -v ${{ env.DOJO_VERSION }}
+      - run: /home/runner/.config/.dojo/bin/dojoup -v $DOJO_VERSION
       - run: |
           cd dojo-starter && /home/runner/.config/.dojo/bin/sozo build
           cd dojo-starter && /home/runner/.config/.dojo/bin/sozo test
