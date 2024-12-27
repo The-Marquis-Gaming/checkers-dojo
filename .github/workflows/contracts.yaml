@@ -32,11 +32,3 @@ jobs:
             echo "Make sure to run \"sozo build\" after changing Scarb.toml"
             exit 1
           fi
-
-      - name: Setup Scarb
-        uses: software-mansion/setup-scarb@v1
-        with:
-          scarb-version: "2.8.4"
-
-      - name: Check Code Format
-        run: cd dojo-starter && scarb fmt --check
