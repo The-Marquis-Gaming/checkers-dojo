@@ -21,7 +21,7 @@ jobs:
         os: [ubuntu-22.04]
         node: [lts/*]
     env:
-      DOJO_VERSION: $(grep 'dojo =' dojo-starter/.tool-versions.toml | awk -F '"' '{print $2}')
+      DOJO_VERSION: $(grep 'dojo =' ../../dojo-starter/.tool-versions.toml | awk -F '"' '{print $2}')
     steps:
       - uses: actions/checkout@v3
       - run: |
