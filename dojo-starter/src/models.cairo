@@ -24,7 +24,7 @@ pub struct Session {
     pub player_2: ContractAddress,
     pub turn: u8, // 0 for Up (Player 1) and 1 for Down (Player 2)
     pub winner: ContractAddress,
-    pub state: u8, // 0 for open, 1 for ongoing, 2 for finished
+    pub state: u8 // 0 for open, 1 for ongoing, 2 for finished
 }
 
 #[derive(Copy, Drop, Serde, Debug)]
@@ -32,7 +32,7 @@ pub struct Session {
 pub struct Player {
     #[key]
     pub player: ContractAddress,
-    pub remaining_pieces: u8,
+    pub remaining_pieces: u8
 }
 
 // Future model to handle lobbies dynamically
