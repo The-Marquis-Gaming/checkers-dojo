@@ -32,7 +32,7 @@ pub struct Session {
 pub struct Player {
     #[key]
     pub player: ContractAddress,
-    pub remaining_pieces: u8
+    pub remaining_pieces: u8,
 }
 
 // Future model to handle lobbies dynamically
@@ -41,7 +41,7 @@ pub struct Player {
 pub struct Counter {
     #[key]
     pub global_key: felt252,
-    value: u64
+    value: u64,
 }
 
 #[generate_trait]
