@@ -1,8 +1,6 @@
 name: Dojo Contracts CI
 on:
   push:
-    branches:
-      - main
     paths:
       - ".github/workflows/contracts.yaml"
       - "dojo-starter/**"
@@ -30,7 +28,7 @@ jobs:
           /home/runner/.config/.dojo/bin/dojoup -v $DOJO_VERSION
       - run: |
           cd dojo-starter && /home/runner/.config/.dojo/bin/sozo build
-          cd dojo-starter && /home/runner/.config/.dojo/bin/sozo test
+          /home/runner/.config/.dojo/bin/sozo test
           if [[ `git status --porcelain` ]]; then
             echo The git repo is dirty
             echo "Make sure to run \"sozo build\" after changing Scarb.toml"
