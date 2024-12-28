@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Get Dojo Version
         run: |
-          DOJO_VERSION=$(grep '^dojo ' ./dojo-starter/.tool-versions | awk -F '"' '{print $2}')
+          DOJO_VERSION=$(grep 'dojo' ./dojo-starter/.tool-versions | awk -F '"' '{print $2}')
           echo "Extracted Dojo version: $DOJO_VERSION"
           echo "DOJO_VERSION=$DOJO_VERSION" >> $GITHUB_ENV
       - run: curl -L https://install.dojoengine.org | bash
