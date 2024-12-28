@@ -1,6 +1,8 @@
 name: Dojo Contracts CI
 on:
   push:
+    branches:
+      - main
     paths:
       - ".github/workflows/contracts.yaml"
       - "dojo-starter/**"
@@ -20,13 +22,13 @@ jobs:
         node: [lts/*]
     steps:
       - uses: actions/checkout@v3
-      - name: Get Dojo Version
+      - name: Install Dojo
         run: |
           DOJO_VERSION=$(grep 'dojo' ./dojo-starter/.tool-versions | awk -F '"' '{print $2}')
           echo "Extracted Dojo version: $DOJO_VERSION"
           echo "DOJO_VERSION=$DOJO_VERSION" >> $GITHUB_ENV
-      - run: curl -L https://install.dojoengine.org | bash
-      - run: /home/runner/.config/.dojo/bin/dojoup -v $DOJO_VERSION
+          curl -L https://install.dojoengine.org | bash
+          /home/runner/.config/.dojo/bin/dojoup -v $DOJO_VERSION
       - run: |
           cd dojo-starter && /home/runner/.config/.dojo/bin/sozo build
           cd dojo-starter && /home/runner/.config/.dojo/bin/sozo test
