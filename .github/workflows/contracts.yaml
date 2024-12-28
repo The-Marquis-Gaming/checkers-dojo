@@ -18,17 +18,28 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
         node: [lts/*]
-    env:
-      DOJO_VERSION: v1.0.2
     steps:
       - uses: actions/checkout@v3
-      - run: curl -L https://install.dojoengine.org | bash
-      - run: /home/runner/.config/.dojo/bin/dojoup -v ${{ env.DOJO_VERSION }}
+      - name: Install Dojo
+        run: |
+          DOJO_VERSION=$(grep '^dojo ' ./dojo-starter/.tool-versions | awk '{print $2}')
+          echo "DOJO_VERSION=$DOJO_VERSION" >> $GITHUB_ENV
+          curl -L https://install.dojoengine.org | bash
+          /home/runner/.config/.dojo/bin/dojoup -v $DOJO_VERSION
       - run: |
           cd dojo-starter && /home/runner/.config/.dojo/bin/sozo build
-          cd dojo-starter && /home/runner/.config/.dojo/bin/sozo test
+          /home/runner/.config/.dojo/bin/sozo test
           if [[ `git status --porcelain` ]]; then
             echo The git repo is dirty
             echo "Make sure to run \"sozo build\" after changing Scarb.toml"
             exit 1
           fi
+      - name: Install Scarb
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+          export PATH=$PATH:/home/runner/.config/.dojo/bin
+          scarb --version
+      - name: Check Code Formatting
+        run: |
+          cd dojo-starter 
+          scarb fmt --check

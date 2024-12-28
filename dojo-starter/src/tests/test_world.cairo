@@ -7,19 +7,20 @@ mod tests {
     use dojo::event::Event;
     use dojo_cairo_test::{
         spawn_test_world, NamespaceDef, TestResource, ContractDef, ContractDefTrait,
-        WorldStorageTestTrait
+        WorldStorageTestTrait,
     };
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
     use dojo_starter::models::{
         Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player, Counter,
-        m_Counter
+        m_Counter,
     };
     use dojo_starter::models::CounterTrait;
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
-            namespace: "checkers_marq", resources: [
+            namespace: "checkers_marq",
+            resources: [
                 TestResource::Model(m_Piece::TEST_CLASS_HASH),
                 TestResource::Model(m_Session::TEST_CLASS_HASH),
                 TestResource::Model(m_Player::TEST_CLASS_HASH),
@@ -28,8 +29,9 @@ mod tests {
                 TestResource::Event(actions::e_Killed::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_King::TEST_CLASS_HASH),
-                TestResource::Contract(actions::TEST_CLASS_HASH)
-            ].span()
+                TestResource::Contract(actions::TEST_CLASS_HASH),
+            ]
+                .span(),
         };
 
         ndef
@@ -39,7 +41,8 @@ mod tests {
         [
             ContractDefTrait::new(@"checkers_marq", @"actions")
                 .with_writer_of([dojo::utils::bytearray_hash(@"checkers_marq")].span())
-        ].span()
+        ]
+            .span()
     }
 
     fn clear_world_event_log(contract_address: starknet::ContractAddress) {
@@ -63,7 +66,7 @@ mod tests {
     }
 
     fn ensure_moved_event(
-        world: WorldStorage, emitted_events: Span<EventEmitted>, moved_event: actions::Moved
+        world: WorldStorage, emitted_events: Span<EventEmitted>, moved_event: actions::Moved,
     ) {
         let selector = Event::<actions::Moved>::selector(world.namespace_hash);
         let mut found = false;
@@ -81,7 +84,7 @@ mod tests {
     }
 
     fn ensure_killed_event(
-        world: WorldStorage, emitted_events: Span<EventEmitted>, killed_event: actions::Killed
+        world: WorldStorage, emitted_events: Span<EventEmitted>, killed_event: actions::Killed,
     ) {
         let selector = Event::<actions::Killed>::selector(world.namespace_hash);
         let mut found = false;
@@ -99,7 +102,7 @@ mod tests {
     }
 
     fn ensure_winner_event(
-        world: WorldStorage, emitted_events: Span<EventEmitted>, winner_event: actions::Winner
+        world: WorldStorage, emitted_events: Span<EventEmitted>, winner_event: actions::Winner,
     ) {
         let selector = Event::<actions::Winner>::selector(world.namespace_hash);
         let mut found = false;
@@ -116,7 +119,7 @@ mod tests {
     }
 
     fn ensure_king_event(
-        world: WorldStorage, emitted_events: Span<EventEmitted>, king_event: actions::King
+        world: WorldStorage, emitted_events: Span<EventEmitted>, king_event: actions::King,
     ) {
         let selector = Event::<actions::King>::selector(world.namespace_hash);
         let mut found = false;
@@ -152,7 +155,7 @@ mod tests {
             col: col,
             position: Position::Down,
             is_king: true,
-            is_alive: true
+            is_alive: true,
         };
         world.write_model_test(@piece);
 
@@ -166,13 +169,13 @@ mod tests {
         // Test initial piece
         assert(
             *pieces[0].position == Position::None && *pieces[0].is_alive == false,
-            'initial piece wrong'
+            'initial piece wrong',
         );
 
         // Test write_model_test
         assert(
             *pieces[1].position == Position::Down && piece.is_king == true && piece.session_id == 0,
-            'write_value_from_id failed'
+            'write_value_from_id failed',
         );
         assert(*pieces[1].is_alive == true, 'write_value_from_id failed');
 
@@ -522,7 +525,7 @@ mod tests {
 
         assert(
             initial_piece_position.row == 2 && initial_piece_position.col == 1,
-            'wrong initial piece'
+            'wrong initial piece',
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
@@ -544,7 +547,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position.row,
                 col: new_coordinates_position.col,
-            }
+            },
         );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
@@ -570,7 +573,7 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
         assert(
             initial_piece_position.row == 2 && initial_piece_position.col == 3,
-            'wrong initial piece cords'
+            'wrong initial piece cords',
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece king');
@@ -592,7 +595,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position.row,
                 col: new_coordinates_position.col,
-            }
+            },
         );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
@@ -619,7 +622,7 @@ mod tests {
 
         assert(
             initial_piece_position.row == 2 && initial_piece_position.col == 5,
-            'wrong initial piece'
+            'wrong initial piece',
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
@@ -641,7 +644,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position.row,
                 col: new_coordinates_position.col,
-            }
+            },
         );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
@@ -669,7 +672,7 @@ mod tests {
 
         assert(
             initial_piece_position.row == 2 && initial_piece_position.col == 7,
-            'wrong initial piece'
+            'wrong initial piece',
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
@@ -691,7 +694,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position.row,
                 col: new_coordinates_position.col,
-            }
+            },
         );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
@@ -719,7 +722,7 @@ mod tests {
 
         assert(
             initial_piece_position.row == 2 && initial_piece_position.col == 1,
-            'wrong initial piece'
+            'wrong initial piece',
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
@@ -741,7 +744,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position.row,
                 col: new_coordinates_position.col,
-            }
+            },
         );
 
         let new_position: Piece = world.read_model((session_id, new_coordinates_position));
@@ -773,17 +776,16 @@ mod tests {
         assert(initial_pieces.len() == 2, 'read_models failed');
 
         assert(
-            *initial_pieces[0].row == 2 && *initial_pieces[0].col == 1, 'wrong initial piece 21'
+            *initial_pieces[0].row == 2 && *initial_pieces[0].col == 1, 'wrong initial piece 21',
         );
         assert(
-            *initial_pieces[1].row == 5 && *initial_pieces[1].col == 6, 'wrong initial piece 56'
+            *initial_pieces[1].row == 5 && *initial_pieces[1].col == 6, 'wrong initial piece 56',
         );
-        for piece in initial_pieces
-            .clone() {
-                assert(piece.session_id == 0, 'wrong session');
-                assert(piece.is_king == false, 'wrong initial piece');
-                assert(piece.is_alive == true, 'wrong initial piece');
-            };
+        for piece in initial_pieces.clone() {
+            assert(piece.session_id == 0, 'wrong session');
+            assert(piece.is_king == false, 'wrong initial piece');
+            assert(piece.is_alive == true, 'wrong initial piece');
+        };
 
         // Test move to positions 32 & 45
         let can_choose_piece21 = actions_system
@@ -802,7 +804,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position32.row,
                 col: new_coordinates_position32.col,
-            }
+            },
         );
 
         let can_choose_piece56 = actions_system
@@ -821,7 +823,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position45.row,
                 col: new_coordinates_position45.col,
-            }
+            },
         );
 
         let new_coordinates_keys: Array<(u64, Coordinates)> = array![
@@ -869,17 +871,16 @@ mod tests {
         assert(initial_pieces.len() == 2, 'read_models failed');
 
         assert(
-            *initial_pieces[0].row == 2 && *initial_pieces[0].col == 1, 'wrong initial piece 21'
+            *initial_pieces[0].row == 2 && *initial_pieces[0].col == 1, 'wrong initial piece 21',
         );
         assert(
-            *initial_pieces[1].row == 5 && *initial_pieces[1].col == 4, 'wrong initial piece 54'
+            *initial_pieces[1].row == 5 && *initial_pieces[1].col == 4, 'wrong initial piece 54',
         );
-        for piece in initial_pieces
-            .clone() {
-                assert(piece.session_id == 0, 'wrong session');
-                assert(piece.is_king == false, 'wrong initial piece');
-                assert(piece.is_alive == true, 'wrong initial piece');
-            };
+        for piece in initial_pieces.clone() {
+            assert(piece.session_id == 0, 'wrong session');
+            assert(piece.is_king == false, 'wrong initial piece');
+            assert(piece.is_alive == true, 'wrong initial piece');
+        };
 
         // Test move to position 32 & 43
         let can_choose_piece = actions_system
@@ -898,7 +899,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: new_coordinates_position32.row,
                 col: new_coordinates_position32.col,
-            }
+            },
         );
 
         let can_choose_piece = actions_system
@@ -917,7 +918,7 @@ mod tests {
                 player: player2,
                 row: new_coordinates_position43.row,
                 col: new_coordinates_position43.col,
-            }
+            },
         );
 
         let new_coordinates_keys: Array<(u64, Coordinates)> = array![
@@ -930,12 +931,11 @@ mod tests {
         assert!(*new_positions[0].col == 2, "piece y is wrong");
         assert!(*new_positions[1].row == 4, "piece x is wrong");
         assert!(*new_positions[1].col == 3, "piece y is wrong");
-        for new_position in new_positions
-            .clone() {
-                assert!(new_position.session_id == 0, "wrong session");
-                assert!(new_position.is_alive == true, "piece is not alive");
-                assert!(new_position.is_king == false, "piece is king");
-            };
+        for new_position in new_positions.clone() {
+            assert!(new_position.session_id == 0, "wrong session");
+            assert!(new_position.is_alive == true, "piece is not alive");
+            assert!(new_position.is_king == false, "piece is king");
+        };
 
         // Test position 32 moves to eat 43 then jump to 54
         let eat_position = Coordinates { row: 4, col: 3 };
@@ -952,7 +952,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: jump_position.row,
                 col: jump_position.col,
-            }
+            },
         );
         ensure_killed_event(
             world,
@@ -962,7 +962,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: 4,
                 col: 3,
-            }
+            },
         );
 
         let updated_pieces_keys: Array<(u64, Coordinates)> = array![
@@ -1018,10 +1018,7 @@ mod tests {
 
         // Arrange board for test
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_25),
-            (session_id, pos_52),
-            (session_id, pos_61),
-            (session_id, pos_70),
+            (session_id, pos_25), (session_id, pos_52), (session_id, pos_61), (session_id, pos_70),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         assert(*pieces[0].row == 2 && *pieces[0].col == 5, 'wrong initial piece 25');
@@ -1036,7 +1033,7 @@ mod tests {
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, pos_25, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
-        
+
         // Test move pieces 25->34, 52->30, 61->41, 70->61
         actions_system.move_piece(*pieces[0], pos_34);
         actions_system.move_piece(*pieces[1], pos_30);
@@ -1045,10 +1042,7 @@ mod tests {
 
         // Get updated pieces
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_34),
-            (session_id, pos_30),
-            (session_id, pos_41),
-            (session_id, pos_61),
+            (session_id, pos_34), (session_id, pos_30), (session_id, pos_41), (session_id, pos_61),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         assert(*pieces[0].row == 3 && *pieces[0].col == 4, 'wrong updated piece 34');
@@ -1097,7 +1091,7 @@ mod tests {
                 player: starknet::get_caller_address(),
                 row: current_piece.row,
                 col: current_piece.col,
-            }
+            },
         );
         assert!(current_piece.session_id == 0, "wrong session");
         assert!(current_piece.row == 7, "piece 70 x is wrong");
@@ -1105,7 +1099,7 @@ mod tests {
         assert!(current_piece.is_alive == true, "piece 70 is not alive");
         assert!(current_piece.is_king == true, "piece 70 is king");
         assert!(current_piece.position == Position::Up, "piece 70 is not right team");
-        
+
         actions_system.move_piece(current_piece, pos_34);
         let current_piece: Piece = world.read_model((session_id, pos_34));
         assert!(current_piece.session_id == 0, "wrong session");
@@ -1128,33 +1122,30 @@ mod tests {
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
         let session_id = actions_system.create_lobby();
-        
+
         // Cheat call the second player
         starknet::testing::set_contract_address(player2);
         actions_system.join_lobby(session_id);
 
         let session: Session = world.read_model((session_id));
         assert(session.player_2 == player2, 'wrong player');
-        
+
         // Reset player to default operation
         starknet::testing::set_contract_address(player1);
 
         // Arrange piece 05 -> 34, make space for double jump
-        let pos_05 = Coordinates {row: 0, col: 5};
-        let pos_14 = Coordinates {row: 1, col: 4};
-        let pos_23 = Coordinates {row: 2, col: 3};
-        let pos_32 = Coordinates {row: 3, col: 2};
-        let pos_34 = Coordinates {row: 3, col: 4};
-        let pos_41 = Coordinates {row: 4, col: 1};
-        let pos_47 = Coordinates {row: 4, col: 1};
-        let pos_50 = Coordinates {row: 5, col: 0};
-        let pos_56 = Coordinates {row: 5, col: 0};
-        
+        let pos_05 = Coordinates { row: 0, col: 5 };
+        let pos_14 = Coordinates { row: 1, col: 4 };
+        let pos_23 = Coordinates { row: 2, col: 3 };
+        let pos_32 = Coordinates { row: 3, col: 2 };
+        let pos_34 = Coordinates { row: 3, col: 4 };
+        let pos_41 = Coordinates { row: 4, col: 1 };
+        let pos_47 = Coordinates { row: 4, col: 1 };
+        let pos_50 = Coordinates { row: 5, col: 0 };
+        let pos_56 = Coordinates { row: 5, col: 0 };
+
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_50),
-            (session_id, pos_23),
-            (session_id, pos_56),
-            (session_id, pos_05),
+            (session_id, pos_50), (session_id, pos_23), (session_id, pos_56), (session_id, pos_05),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
 
@@ -1181,10 +1172,10 @@ mod tests {
         assert!(*pieces[0].is_alive == true, "piece 23 is not alive");
         assert!(*pieces[1].is_alive == false, "piece 32 is alive");
         assert!(session.turn == 0, "turned changed");
-        
+
         actions_system.move_piece(*pieces[0], pos_14);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_23), (session_id, pos_14), (session_id, pos_05)
+            (session_id, pos_23), (session_id, pos_14), (session_id, pos_05),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1214,23 +1205,21 @@ mod tests {
 
         let session: Session = world.read_model((session_id));
         assert(session.player_2 == player2, 'wrong player');
-        
+
         // Reset player to default operation
         starknet::testing::set_contract_address(player1);
 
         // Arrange pieces for double zigzag
-        let pos_23 = Coordinates {row: 2, col: 3};
-        let pos_32 = Coordinates {row: 3, col: 2};
-        let pos_41 = Coordinates {row: 4, col: 1};
-        let pos_43 = Coordinates {row: 4, col: 3};
-        let pos_50 = Coordinates {row: 5, col: 0};
-        let pos_61 = Coordinates {row: 6, col: 1};
-        let pos_72 = Coordinates {row: 7, col: 2};
+        let pos_23 = Coordinates { row: 2, col: 3 };
+        let pos_32 = Coordinates { row: 3, col: 2 };
+        let pos_41 = Coordinates { row: 4, col: 1 };
+        let pos_43 = Coordinates { row: 4, col: 3 };
+        let pos_50 = Coordinates { row: 5, col: 0 };
+        let pos_61 = Coordinates { row: 6, col: 1 };
+        let pos_72 = Coordinates { row: 7, col: 2 };
 
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_72),
-            (session_id, pos_23),
-            (session_id, pos_50),
+            (session_id, pos_72), (session_id, pos_23), (session_id, pos_50),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
 
@@ -1240,7 +1229,7 @@ mod tests {
 
         // Test all is arranged for double zigzag jump
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_32), (session_id, pos_41), (session_id, pos_72), 
+            (session_id, pos_32), (session_id, pos_41), (session_id, pos_72),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         assert!(*pieces[0].is_alive == true, "piece 32 is not alive");
@@ -1258,10 +1247,10 @@ mod tests {
         assert!(*pieces[1].is_alive == false, "piece 41 is alive");
         assert!(*pieces[0].position == Position::Up, "piece 50 wrong team");
         assert!(session.turn == 1, "turn changed");
-        
+
         actions_system.move_piece(*pieces[0], pos_61);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_50), (session_id, pos_61), (session_id, pos_72)
+            (session_id, pos_50), (session_id, pos_61), (session_id, pos_72),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1284,37 +1273,37 @@ mod tests {
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
         let session_id = actions_system.create_lobby();
-        
+
         // Cheat call the second player
         starknet::testing::set_contract_address(player2);
         actions_system.join_lobby(session_id);
 
         let session: Session = world.read_model((session_id));
         assert(session.player_2 == player2, 'wrong player');
-        
+
         // Reset player to default operation
         starknet::testing::set_contract_address(player1);
 
         // All needed coordinates for test
-        let pos_05 = Coordinates {row: 0, col: 5};
-        let pos_14 = Coordinates {row: 1, col: 4};
-        let pos_16 = Coordinates {row: 1, col: 6};
-        let pos_23 = Coordinates {row: 2, col: 3};
-        let pos_25 = Coordinates {row: 2, col: 5};
-        let pos_27 = Coordinates {row: 2, col: 7};
-        let pos_30 = Coordinates {row: 3, col: 0};
-        let pos_32 = Coordinates {row: 3, col: 2};
-        let pos_34 = Coordinates {row: 3, col: 4};
-        let pos_36 = Coordinates {row: 3, col: 6};
-        let pos_41 = Coordinates {row: 4, col: 1};
-        let pos_43 = Coordinates {row: 4, col: 3};
-        let pos_45 = Coordinates {row: 4, col: 5};
-        let pos_47 = Coordinates {row: 4, col: 7};
-        let pos_50 = Coordinates {row: 5, col: 0};
-        let pos_54 = Coordinates {row: 5, col: 4};
-        let pos_56 = Coordinates {row: 5, col: 6};
-        let pos_61 = Coordinates {row: 6, col: 1};
-        let pos_70 = Coordinates {row: 7, col: 0};
+        let pos_05 = Coordinates { row: 0, col: 5 };
+        let pos_14 = Coordinates { row: 1, col: 4 };
+        let pos_16 = Coordinates { row: 1, col: 6 };
+        let pos_23 = Coordinates { row: 2, col: 3 };
+        let pos_25 = Coordinates { row: 2, col: 5 };
+        let pos_27 = Coordinates { row: 2, col: 7 };
+        let pos_30 = Coordinates { row: 3, col: 0 };
+        let pos_32 = Coordinates { row: 3, col: 2 };
+        let pos_34 = Coordinates { row: 3, col: 4 };
+        let pos_36 = Coordinates { row: 3, col: 6 };
+        let pos_41 = Coordinates { row: 4, col: 1 };
+        let pos_43 = Coordinates { row: 4, col: 3 };
+        let pos_45 = Coordinates { row: 4, col: 5 };
+        let pos_47 = Coordinates { row: 4, col: 7 };
+        let pos_50 = Coordinates { row: 5, col: 0 };
+        let pos_54 = Coordinates { row: 5, col: 4 };
+        let pos_56 = Coordinates { row: 5, col: 6 };
+        let pos_61 = Coordinates { row: 6, col: 1 };
+        let pos_70 = Coordinates { row: 7, col: 0 };
 
         // Arrange pieces for scenario
         let pieces_keys: Array<(u64, Coordinates)> = array![
@@ -1349,13 +1338,11 @@ mod tests {
         assert!(king.is_king == true, "king 05 is not king");
         assert!(king.position == Position::Down, "king 05 wrong team");
         assert!(session.turn == 0, "turn is wrong");
-        
+
         // Test 05 eats 16 lands 27
         actions_system.move_piece(king, pos_16);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_05),
-            (session_id, pos_16),
-            (session_id, pos_27),
+            (session_id, pos_05), (session_id, pos_16), (session_id, pos_27),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1369,9 +1356,7 @@ mod tests {
         // Test 27 eats 36 lands 45
         actions_system.move_piece(*pieces[2], pos_36);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_27),
-            (session_id, pos_36),
-            (session_id, pos_45),
+            (session_id, pos_27), (session_id, pos_36), (session_id, pos_45),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1385,9 +1370,7 @@ mod tests {
         // Test 45 eats 34 lands 23
         actions_system.move_piece(*pieces[2], pos_34);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_45),
-            (session_id, pos_34),
-            (session_id, pos_23),
+            (session_id, pos_45), (session_id, pos_34), (session_id, pos_23),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1411,32 +1394,32 @@ mod tests {
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
         let session_id = actions_system.create_lobby();
-        
+
         // Cheat call the second player
         starknet::testing::set_contract_address(player2);
         actions_system.join_lobby(session_id);
 
         let session: Session = world.read_model((session_id));
         assert(session.player_2 == player2, 'wrong player');
-        
+
         // Reset player to default operation
         starknet::testing::set_contract_address(player1);
 
         // All needed coordinates for test
-        let pos_05 = Coordinates {row: 0, col: 5};
-        let pos_16 = Coordinates {row: 1, col: 6};
-        let pos_27 = Coordinates {row: 2, col: 7};
-        let pos_30 = Coordinates {row: 3, col: 0};
-        let pos_32 = Coordinates {row: 3, col: 2};
-        let pos_41 = Coordinates {row: 4, col: 1};
-        let pos_43 = Coordinates {row: 4, col: 3};
-        let pos_45 = Coordinates {row: 4, col: 5};
-        let pos_50 = Coordinates {row: 5, col: 0};
-        let pos_52 = Coordinates {row: 5, col: 2};
-        let pos_54 = Coordinates {row: 5, col: 4};
-        let pos_61 = Coordinates {row: 6, col: 1};
-        let pos_63 = Coordinates {row: 6, col: 3};
-        let pos_72 = Coordinates {row: 7, col: 2};
+        let pos_05 = Coordinates { row: 0, col: 5 };
+        let pos_16 = Coordinates { row: 1, col: 6 };
+        let pos_27 = Coordinates { row: 2, col: 7 };
+        let pos_30 = Coordinates { row: 3, col: 0 };
+        let pos_32 = Coordinates { row: 3, col: 2 };
+        let pos_41 = Coordinates { row: 4, col: 1 };
+        let pos_43 = Coordinates { row: 4, col: 3 };
+        let pos_45 = Coordinates { row: 4, col: 5 };
+        let pos_50 = Coordinates { row: 5, col: 0 };
+        let pos_52 = Coordinates { row: 5, col: 2 };
+        let pos_54 = Coordinates { row: 5, col: 4 };
+        let pos_61 = Coordinates { row: 6, col: 1 };
+        let pos_63 = Coordinates { row: 6, col: 3 };
+        let pos_72 = Coordinates { row: 7, col: 2 };
 
         // Arrange pieces for scenario
         let pieces_keys: Array<(u64, Coordinates)> = array![
@@ -1465,13 +1448,11 @@ mod tests {
         assert!(king.is_king == true, "king 72 is not king");
         assert!(king.position == Position::Up, "king 72 wrong team");
         assert!(session.turn == 1, "turn is wrong");
-        
+
         // Test 72 eats 63 lands 54
         actions_system.move_piece(king, pos_63);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_72),
-            (session_id, pos_63),
-            (session_id, pos_54),
+            (session_id, pos_72), (session_id, pos_63), (session_id, pos_54),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1485,9 +1466,7 @@ mod tests {
         // Test 54 eats 43 lands 32
         actions_system.move_piece(*pieces[2], pos_43);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_54),
-            (session_id, pos_43),
-            (session_id, pos_32),
+            (session_id, pos_54), (session_id, pos_43), (session_id, pos_32),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1501,9 +1480,7 @@ mod tests {
         // Test 32 eats 41 lands 50
         actions_system.move_piece(*pieces[2], pos_41);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_32),
-            (session_id, pos_41),
-            (session_id, pos_50),
+            (session_id, pos_32), (session_id, pos_41), (session_id, pos_50),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1517,9 +1494,7 @@ mod tests {
         // Test 50 eats 61 lands 72
         actions_system.move_piece(*pieces[2], pos_61);
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, pos_50),
-            (session_id, pos_61),
-            (session_id, pos_72),
+            (session_id, pos_50), (session_id, pos_61), (session_id, pos_72),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         let session: Session = world.read_model((session_id));
@@ -1588,17 +1563,16 @@ mod tests {
         assert(initial_pieces.len() == 2, 'read_models failed');
 
         assert(
-            *initial_pieces[0].row == 2 && *initial_pieces[0].col == 1, 'wrong initial piece 21'
+            *initial_pieces[0].row == 2 && *initial_pieces[0].col == 1, 'wrong initial piece 21',
         );
         assert(
-            *initial_pieces[1].row == 5 && *initial_pieces[1].col == 6, 'wrong initial piece 56'
+            *initial_pieces[1].row == 5 && *initial_pieces[1].col == 6, 'wrong initial piece 56',
         );
-        for piece in initial_pieces
-            .clone() {
-                assert(piece.session_id == 0, 'wrong session');
-                assert(piece.is_king == false, 'piece is king');
-                assert(piece.is_alive == true, 'piece is not alive');
-            };
+        for piece in initial_pieces.clone() {
+            assert(piece.session_id == 0, 'wrong session');
+            assert(piece.is_king == false, 'piece is king');
+            assert(piece.is_alive == true, 'piece is not alive');
+        };
 
         // Test move to positions 32 & 45
         let can_choose_piece21 = actions_system
