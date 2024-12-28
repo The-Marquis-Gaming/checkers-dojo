@@ -1,8 +1,4 @@
 use starknet::ContractAddress;
-use core::copy::Copy;
-use core::drop::Drop;
-use core::debug::Debug;
-use serde::Serde;
 
 #[derive(Copy, Drop, Serde, Debug)]
 #[dojo::model]
@@ -28,7 +24,7 @@ pub struct Session {
     pub player_2: ContractAddress,
     pub turn: u8, // 0 for Up (Player 1) and 1 for Down (Player 2)
     pub winner: ContractAddress,
-    pub state: u8 // 0 for open, 1 for ongoing, 2 for finished
+    pub state: u8, // 0 for open, 1 for ongoing, 2 for finished
 }
 
 #[derive(Copy, Drop, Serde, Debug)]
@@ -45,7 +41,7 @@ pub struct Player {
 pub struct Counter {
     #[key]
     pub global_key: felt252,
-    value: u64,
+    value: u64
 }
 
 #[generate_trait]
@@ -87,7 +83,7 @@ impl PositionIntoFelt252 of Into<Position, felt252> {
 #[derive(Copy, Drop, Serde, Introspect, Debug)]
 pub struct Coordinates {
     pub row: u8,
-    pub col: u8,
+    pub col: u8
 }
 
 #[generate_trait]
