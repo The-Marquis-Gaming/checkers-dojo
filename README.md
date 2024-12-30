@@ -36,7 +36,7 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x0376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14f2 --http.cors_origins=*
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins=*
 ```
 
 ### Terminal 3: Start the Client
