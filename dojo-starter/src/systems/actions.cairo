@@ -22,14 +22,15 @@ trait IActions<T> {
 pub mod actions {
     use super::IActions;
     use starknet::{ContractAddress, get_caller_address};
-    use dojo_starter::models::{Piece, PieceTrait};
-    use dojo_starter::models::{Coordinates, CoordinatesTrait};
-    use dojo_starter::models::Position;
-    use dojo_starter::models::{Session, SessionTrait};
-    use dojo_starter::models::{Player, PlayerTrait};
-    use dojo_starter::models::{Counter, CounterTrait};
+    use dojo_starter::models::piece::{Piece, PieceTrait, PieceImpl};
+    use dojo_starter::models::coordinates::{Coordinates, CoordinatesTrait, CoordinatesImpl};
+    use dojo_starter::models::position::Position;
+    use dojo_starter::models::session::{Session, SessionImpl, SessionTrait};
+    use dojo_starter::models::player::{Player, PlayerImpl, PlayerTrait};
+    use dojo_starter::models::counter::{Counter, CounterTrait};
 
-    use dojo::model::{modelStorage, modelValueStorage};
+    use dojo::world::WorldStorageTrait;
+    use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
 
     #[derive(Copy, Drop, Serde)]
@@ -87,7 +88,7 @@ pub mod actions {
             // Write the counter back to the world
             world.write_model(@session_counter);
 
-            let session = Session::new(
+            let session = SessionImpl::new(
                 session_id,
                 player,
                 starknet::contract_address_const::<0x0>(),
@@ -240,7 +241,7 @@ pub mod actions {
                 self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
             }
             // Assign remaining pieces to player
-            let player_model = Player::new(player, 12);
+            let player_model = PlayerImpl::new(player, 12);
             world.write_model(@player_model);
         }
 
@@ -261,7 +262,7 @@ pub mod actions {
                 row += row_step;
                 col += col_step;
 
-                let valid = self.check_is_valid_position(Coordinates::new(row, col));
+                let valid = self.check_is_valid_position(CoordinatesImpl::new(row, col));
 
                 if valid {
                     let target_square: Piece = world.read_model((session_id, row, col));
@@ -291,7 +292,7 @@ pub mod actions {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
                 while col < 8 {
-                    let piece = Piece::new(session_id, player, row, col, position, false, true);
+                    let piece = PieceImpl::new(session_id, row, col, player, position, false, true);
                     pieces.append(@piece);
                     col += 2;
                 };
@@ -309,8 +310,8 @@ pub mod actions {
                 let mut col = start_col;
                 let player = starknet::contract_address_const::<0x0>();
                 while col < 8 {
-                    let piece = Piece::new(
-                        session_id, player, row, col, Position::None, false, false,
+                    let piece = PieceImpl::new(
+                        session_id, row, col, player, Position::None, false, false,
                     );
                     pieces.append(@piece);
                     col += 2;
@@ -412,14 +413,14 @@ pub mod actions {
 
                     // Check down-left diagonal
                     if piece_col > 0 {
-                        let target_down_left = Coordinates::new(piece_row + 1, piece_col - 1);
+                        let target_down_left = CoordinatesImpl::new(piece_row + 1, piece_col - 1);
                         let target_square: Piece = world.read_model((session_id, target_down_left));
                         return !target_square.is_alive;
                     }
 
                     // Check down-right diagonal
                     if piece_col + 1 < 8 {
-                        let target_down_right = Coordinates::new(piece_row + 1, piece_col + 1);
+                        let target_down_right = CoordinatesImpl::new(piece_row + 1, piece_col + 1);
                         let target_square: Piece = world
                             .read_model((session_id, target_down_right));
                         return !target_square.is_alive;
@@ -434,14 +435,14 @@ pub mod actions {
 
                     // Check up-left diagonal
                     if piece_col > 0 {
-                        let target_up_left = Coordinates::new(piece_row - 1, piece_col - 1);
+                        let target_up_left = CoordinatesImpl::new(piece_row - 1, piece_col - 1);
                         let target_square: Piece = world.read_model((session_id, target_up_left));
                         return !target_square.is_alive;
                     }
 
                     // Check up-right diagonal
                     if piece_col + 1 < 8 {
-                        let target_up_right = Coordinates::new(piece_row - 1, piece_col + 1);
+                        let target_up_right = CoordinatesImpl::new(piece_row - 1, piece_col + 1);
                         let target_square: Piece = world.read_model((session_id, target_up_right));
                         return !target_square.is_alive;
                     }
@@ -476,19 +477,19 @@ pub mod actions {
             // Ensure we don't check outbound squares
             if piece.row > 0 && piece.col < 7 {
                 possible_jumps_up_keys
-                    .append((session_id, Coordinates::new(piece.row - 1, piece.col + 1))); // UR
+                    .append((session_id, CoordinatesImpl::new(piece.row - 1, piece.col + 1))); // UR
             }
             if piece.row > 0 && piece.col > 0 {
                 possible_jumps_up_keys
-                    .append((session_id, Coordinates::new(piece.row - 1, piece.col - 1))); // UL
+                    .append((session_id, CoordinatesImpl::new(piece.row - 1, piece.col - 1))); // UL
             }
             if piece.row < 7 && piece.col < 7 {
                 possible_jumps_down_keys
-                    .append((session_id, Coordinates::new(piece.row + 1, piece.col + 1))); // DR
+                    .append((session_id, CoordinatesImpl::new(piece.row + 1, piece.col + 1))); // DR
             }
             if piece.row < 7 && piece.col > 0 {
                 possible_jumps_down_keys
-                    .append((session_id, Coordinates::new(piece.row + 1, piece.col - 1))); // DL
+                    .append((session_id, CoordinatesImpl::new(piece.row + 1, piece.col - 1))); // DL
             }
 
             let possible_jumps_up: Array<Piece> = world.read_models(possible_jumps_up_keys.span());
@@ -537,7 +538,7 @@ pub mod actions {
 
             assert!(land_row >= 0, "row less than 0");
             assert!(land_col >= 0, "col less than 0");
-            Coordinates::new(land_row.try_into().unwrap(), land_col.try_into().unwrap())
+            CoordinatesImpl::new(land_row.try_into().unwrap(), land_col.try_into().unwrap())
         }
 
         fn update_alive_position(ref self: ContractState, mut piece: Piece, mut square: Piece) {
@@ -584,7 +585,7 @@ pub mod actions {
                 self.update_alive_position(piece, square);
             } else {
                 // Get the coordinates of the square and do the swap
-                let coordinates = Coordinates::new(square.row, square.col);
+                let coordinates = CoordinatesImpl::new(square.row, square.col);
                 self.change_is_alive(piece, coordinates);
             }
         }
