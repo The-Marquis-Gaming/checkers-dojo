@@ -11,13 +11,11 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.2](https://book.dojoengine.org/)**
+- **[Dojo v1.0.9](https://book.dojoengine.org/)**
 
 ---
 
 ## Quick Start Guide
-
-```
 
 ### Terminal 1: Start Katana
 
@@ -36,7 +34,7 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x0376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14f2 --http.cors_origins=*
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins=*
 ```
 
 ### Terminal 3: Start the Client
@@ -99,13 +97,13 @@ slot deployments logs checkers-controller-1 torii -f
 
 #### Configuration
 
-World: 0x7e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3
-RPC: <https://api.cartridge.gg/x/checkers-controller-1/katana>
+World: 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca
+RPC: <https://api.cartridge.gg/x/checkers-scaffold/katana>
 Start Block: 1
 Endpoints:
 
-GRAPHQL: <https://api.cartridge.gg/x/checkers-controller-1/torii/graphql>
-GRPC: <https://api.cartridge.gg/x/checkers-controller-1/torii>
+GRAPHQL: <https://api.cartridge.gg/x/checkers-scaffold/torii/graphql>
+GRPC: <https://api.cartridge.gg/x/checkers-scaffold/torii>
 
 ## Play
 
