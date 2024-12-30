@@ -98,11 +98,15 @@ slot deployments logs checkers-controller-1 torii -f
 #### Configuration
 
 World: 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca
+
 RPC: <https://api.cartridge.gg/x/checkers-scaffold/katana>
+
 Start Block: 1
+
 Endpoints:
 
 GRAPHQL: <https://api.cartridge.gg/x/checkers-scaffold/torii/graphql>
+
 GRPC: <https://api.cartridge.gg/x/checkers-scaffold/torii>
 
 ## Play
