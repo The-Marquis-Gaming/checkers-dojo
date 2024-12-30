@@ -1,6 +1,5 @@
 # Issue | Checkers
 
-
 ## 1. Type of Issue
 
 - [ ] Bug  
@@ -41,10 +40,5 @@
 
 ---
 
-## 7. Additional Context (Optional)  
-<!-- Environment details, browser version, relevant background info -->
-
----
-
-## 8. Proposed Solution (Optional)  
+## 7. Proposed Solution (Optional)  
 <!-- If you have ideas on how to solve this issue, share them here -->

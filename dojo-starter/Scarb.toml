@@ -12,10 +12,10 @@ spawn = "sozo execute dojo_starter-actions spawn --wait"
 move = "sozo execute dojo_starter-actions move -c 1 --wait"
 
 [dependencies]
-dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.8" }
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.9" }
 
 [[target.starknet-contract]]
 build-external-contracts = ["dojo::world::world_contract::world"]
 
 [dev-dependencies]
-dojo_cairo_test = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.8" }
+dojo_cairo_test = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.9" }

@@ -1,7 +1,5 @@
 # Checkers
 
-![Checkers Game](/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png)
-
 Checkers is a classic board game implemented in a web environment using the Dojo Engine. This project leverages Starknet’s Layer 2 to create a fully decentralized, on-chain checkers game. All game logic, including player moves, validations, and win conditions, is implemented with smart contracts on Starknet, ensuring transparency and fairness.
 
 - Create Burners
@@ -13,23 +11,13 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.2](https://book.dojoengine.org/)**
+- **[Dojo v1.0.9](https://book.dojoengine.org/)**
 
 ---
 
 ## Quick Start Guide
 
-### Terminal 1: The Marquis
-
-Open a terminal and run:
-
-```bash
-cd the-marquis
-yarn install 
-yarn start
-```
-
-### Terminal 2: Start Katana
+### Terminal 1: Start Katana
 
 Open a terminal and run:
 
@@ -38,7 +26,7 @@ cd dojo-starter
 katana --dev --dev.no-fee --http.cors_origins=*
 ```
 
-### Terminal 3: Build and Migrate the Project
+### Terminal 2: Build and Migrate the Project
 
 In a second terminal, execute:
 
@@ -46,10 +34,10 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x0376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14f2 --http.cors_origins=*
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins=*
 ```
 
-### Terminal 4: Start the Client
+### Terminal 3: Start the Client
 
 In a third terminal, navigate to the client folder and run:
 
@@ -76,28 +64,28 @@ For Windows installation and configuration of mkcert, follow the guide in the li
 
 For Linux installation and configuration of mkcert, follow the official guidelines provided in these links:
 
--   [Linux Installation Steps](https://github.com/FiloSottile/mkcert#linux)
--   [mkcert Installation Guide](https://github.com/FiloSottile/mkcert?tab=readme-ov-file#mkcert)
+- [Linux Installation Steps](https://github.com/FiloSottile/mkcert#linux)
+- [mkcert Installation Guide](https://github.com/FiloSottile/mkcert?tab=readme-ov-file#mkcert)
 
 These guides provide detailed steps to set up mkcert on various Linux distributions.
 
 #### Check HTTPS Security in the Browser
 
--   After completing the mkcert configuration, visit your local site.
--   The browser should display **"This page is secure (valid HTTPS)"**.
--   If the page shows as **insecure**, the mkcert configuration is incorrect.
+- After completing the mkcert configuration, visit your local site.
+- The browser should display **"This page is secure (valid HTTPS)"**.
+- If the page shows as **insecure**, the mkcert configuration is incorrect.
 
-  
 ### Alternative to mkcert: Use ngrok
 
 Run the following command to use ngrok:
+
 ```bash
 ngrok http 5173
 ```
 
 With this, you will be able to use the connection with the controller.
 
-### Related commands for the Katana slot:
+### Related commands for the Katana slot
 
 ```bash
 slot deployments logs checkers-controller-1 katana -f
@@ -109,13 +97,17 @@ slot deployments logs checkers-controller-1 torii -f
 
 #### Configuration
 
-World: 0x7e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3
-RPC: <https://api.cartridge.gg/x/checkers-controller-1/katana>
+World: 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca
+
+RPC: <https://api.cartridge.gg/x/checkers-scaffold/katana>
+
 Start Block: 1
+
 Endpoints:
 
-GRAPHQL: <https://api.cartridge.gg/x/checkers-controller-1/torii/graphql>
-GRPC: <https://api.cartridge.gg/x/checkers-controller-1/torii>
+GRAPHQL: <https://api.cartridge.gg/x/checkers-scaffold/torii/graphql>
+
+GRPC: <https://api.cartridge.gg/x/checkers-scaffold/torii>
 
 ## Play
 
