@@ -11,11 +11,12 @@ mod tests {
     };
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
-    use dojo_starter::models::{
-        Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player, Counter,
-        m_Counter,
-    };
-    use dojo_starter::models::CounterTrait;
+    use dojo_starter::models::piece::{Piece, PieceTrait, PieceImpl, m_Piece};
+    use dojo_starter::models::coordinates::{Coordinates, CoordinatesTrait, CoordinatesImpl};
+    use dojo_starter::models::position::Position;
+    use dojo_starter::models::session::{Session, SessionTrait, SessionImpl, m_Session};
+    use dojo_starter::models::player::{Player, PlayerTrait, PlayerImpl, m_Player};
+    use dojo_starter::models::counter::{Counter, CounterTrait, m_Counter};
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
@@ -148,20 +149,11 @@ mod tests {
 
         let row = 1;
         let col = 1;
-        let piece = Piece {
-            session_id: session_id,
-            player: caller,
-            row: row,
-            col: col,
-            position: Position::Down,
-            is_king: true,
-            is_alive: true,
-        };
+        let piece = PieceImpl::new(session_id, row, col, caller, Position::Down, true, true);
         world.write_model_test(@piece);
 
         let pieces_keys: Array<(u64, Coordinates)> = array![
-            (session_id, Coordinates { row: 7, col: 7 }),
-            (session_id, Coordinates { row: 1, col: 1 }),
+            (session_id, CoordinatesImpl::new(7, 1)), (session_id, CoordinatesImpl::new(1, 1)),
         ];
         let pieces: Array<Piece> = world.read_models(pieces_keys.span());
         assert(pieces.len() == 2, 'read_models failed');
@@ -196,124 +188,124 @@ mod tests {
         let session_id = 0;
 
         // test zero row
-        let invalid_piece_position00 = Coordinates { row: 0, col: 0 }; // Empty square
+        let invalid_piece_position00 = CoordinatesImpl::new(0, 0); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position00, session_id);
         assert(!can_choose_piece, 'should be false');
-        let invalid_piece_position01 = Coordinates { row: 0, col: 1 };
+        let invalid_piece_position01 = CoordinatesImpl::new(0, 1);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position01, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position02 = Coordinates { row: 0, col: 2 }; // Empty square
+        let invalid_piece_position02 = CoordinatesImpl::new(0, 2); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position02, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position03 = Coordinates { row: 0, col: 3 };
+        let invalid_piece_position03 = CoordinatesImpl::new(0, 3);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position03, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position04 = Coordinates { row: 0, col: 4 }; // Empty square
+        let invalid_piece_position04 = CoordinatesImpl::new(0, 4); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position04, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position05 = Coordinates { row: 0, col: 5 };
+        let invalid_piece_position05 = CoordinatesImpl::new(0, 5);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position05, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position06 = Coordinates { row: 0, col: 6 }; // Empty square
+        let invalid_piece_position06 = CoordinatesImpl::new(0, 6); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position06, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position07 = Coordinates { row: 0, col: 7 };
+        let invalid_piece_position07 = CoordinatesImpl::new(0, 7);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position07, session_id);
         assert(!can_choose_piece, 'should be false');
 
         // test first row
-        let invalid_piece_position10 = Coordinates { row: 1, col: 0 };
+        let invalid_piece_position10 = CoordinatesImpl::new(1, 0);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position10, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position11 = Coordinates { row: 1, col: 1 }; // Empty square
+        let invalid_piece_position11 = CoordinatesImpl::new(1, 1); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position11, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position12 = Coordinates { row: 1, col: 2 };
+        let invalid_piece_position12 = CoordinatesImpl::new(1, 2);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position12, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position13 = Coordinates { row: 1, col: 3 }; // Empty square
+        let invalid_piece_position13 = CoordinatesImpl::new(1, 3); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position13, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position14 = Coordinates { row: 1, col: 4 };
+        let invalid_piece_position14 = CoordinatesImpl::new(1, 4);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position14, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position15 = Coordinates { row: 1, col: 5 }; // Empty square
+        let invalid_piece_position15 = CoordinatesImpl::new(1, 5); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position15, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position16 = Coordinates { row: 1, col: 6 };
+        let invalid_piece_position16 = CoordinatesImpl::new(1, 6);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position16, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position17 = Coordinates { row: 1, col: 7 }; // Empty square
+        let invalid_piece_position17 = CoordinatesImpl::new(1, 7); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position17, session_id);
         assert(!can_choose_piece, 'should be false');
 
         // test second row
-        let invalid_piece_position20 = Coordinates { row: 2, col: 0 }; // Empty square
+        let invalid_piece_position20 = CoordinatesImpl::new(2, 0); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position20, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position22 = Coordinates { row: 2, col: 2 }; // Empty square
+        let invalid_piece_position22 = CoordinatesImpl::new(2, 2); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position22, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position24 = Coordinates { row: 2, col: 4 }; // Empty square
+        let invalid_piece_position24 = CoordinatesImpl::new(2, 4); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position24, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position26 = Coordinates { row: 2, col: 6 }; // Empty square
+        let invalid_piece_position26 = CoordinatesImpl::new(2, 6); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position26, session_id);
         assert(!can_choose_piece, 'should be false');
 
         // test fifth row
-        let invalid_piece_position51 = Coordinates { row: 5, col: 1 }; // Empty square
+        let invalid_piece_position51 = CoordinatesImpl::new(5, 1); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position51, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position53 = Coordinates { row: 5, col: 3 }; // Empty square
+        let invalid_piece_position53 = CoordinatesImpl::new(5, 3); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position53, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position55 = Coordinates { row: 5, col: 5 }; // Empty square
+        let invalid_piece_position55 = CoordinatesImpl::new(5, 5); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position55, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position57 = Coordinates { row: 5, col: 7 }; // Empty square
+        let invalid_piece_position57 = CoordinatesImpl::new(5, 7); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position57, session_id);
         assert(!can_choose_piece, 'should be false');
@@ -324,82 +316,82 @@ mod tests {
         world.write_model(@session);
 
         // test sixth row
-        let invalid_piece_position60 = Coordinates { row: 6, col: 0 }; // Empty square
+        let invalid_piece_position60 = CoordinatesImpl::new(6, 0); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position60, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position61 = Coordinates { row: 6, col: 1 };
+        let invalid_piece_position61 = CoordinatesImpl::new(6, 1);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position61, session_id);
         assert(!can_choose_piece, 'should be false');
-        let invalid_piece_position62 = Coordinates { row: 6, col: 2 }; // Empty square
+        let invalid_piece_position62 = CoordinatesImpl::new(6, 2); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position62, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position63 = Coordinates { row: 6, col: 3 };
+        let invalid_piece_position63 = CoordinatesImpl::new(6, 3);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position63, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position64 = Coordinates { row: 6, col: 4 }; // Empty square
+        let invalid_piece_position64 = CoordinatesImpl::new(6, 4); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position64, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position65 = Coordinates { row: 6, col: 5 };
+        let invalid_piece_position65 = CoordinatesImpl::new(6, 5);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position65, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position66 = Coordinates { row: 6, col: 6 }; // Empty square
+        let invalid_piece_position66 = CoordinatesImpl::new(6, 6); // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position66, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position67 = Coordinates { row: 6, col: 7 };
+        let invalid_piece_position67 = CoordinatesImpl::new(6, 7);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position67, session_id);
         assert(!can_choose_piece, 'should be false');
 
         // test seventh row
-        let invalid_piece_position70 = Coordinates { row: 7, col: 0 };
+        let invalid_piece_position70 = CoordinatesImpl::new(7, 0);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position70, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position71 = Coordinates { row: 7, col: 1 };
+        let invalid_piece_position71 = CoordinatesImpl::new(7, 1);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position71, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position72 = Coordinates { row: 7, col: 2 };
+        let invalid_piece_position72 = CoordinatesImpl::new(7, 2);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position72, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position73 = Coordinates { row: 7, col: 3 };
+        let invalid_piece_position73 = CoordinatesImpl::new(7, 3);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position73, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position74 = Coordinates { row: 7, col: 4 };
+        let invalid_piece_position74 = CoordinatesImpl::new(7, 4);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position74, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position75 = Coordinates { row: 7, col: 5 };
+        let invalid_piece_position75 = CoordinatesImpl::new(7, 5);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position75, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position76 = Coordinates { row: 7, col: 6 };
+        let invalid_piece_position76 = CoordinatesImpl::new(7, 6);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position76, session_id);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position77 = Coordinates { row: 7, col: 7 };
+        let invalid_piece_position77 = CoordinatesImpl::new(7, 7);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position77, session_id);
         assert(!can_choose_piece, 'should be false');
@@ -418,26 +410,26 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position21 = Coordinates { row: 2, col: 1 };
+        let valid_piece_position21 = CoordinatesImpl::new(2, 1);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position21, session_id);
         assert(can_choose_piece, 'should be true');
-        let valid_piece_position23 = Coordinates { row: 2, col: 3 };
+        let valid_piece_position23 = CoordinatesImpl::new(2, 3);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position23, session_id);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position25 = Coordinates { row: 2, col: 5 };
+        let valid_piece_position25 = CoordinatesImpl::new(2, 5);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position25, session_id);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position27 = Coordinates { row: 2, col: 7 };
+        let valid_piece_position27 = CoordinatesImpl::new(2, 7);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position27, session_id);
         assert(can_choose_piece, 'should be true');
         // test fifth row
-        let valid_piece_position50 = Coordinates { row: 5, col: 0 };
+        let valid_piece_position50 = CoordinatesImpl::new(5, 0);
 
         // Change turn
         let mut game: Session = world.read_model((session_id));
@@ -448,17 +440,17 @@ mod tests {
             .can_choose_piece(Position::Down, valid_piece_position50, session_id);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position52 = Coordinates { row: 5, col: 2 };
+        let valid_piece_position52 = CoordinatesImpl::new(5, 2);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position52, session_id);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position54 = Coordinates { row: 5, col: 4 };
+        let valid_piece_position54 = CoordinatesImpl::new(5, 4);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position54, session_id);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position56 = Coordinates { row: 5, col: 6 };
+        let valid_piece_position56 = CoordinatesImpl::new(5, 6);
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position56, session_id);
         assert(can_choose_piece, 'should be true');
@@ -476,14 +468,14 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 1 };
+        let valid_piece_position = CoordinatesImpl::new(2, 1);
 
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
         let current_piece = world.read_model((session_id, valid_piece_position));
-        let new_coordinates_position = Coordinates { row: 3, col: 1 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 1);
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
 
@@ -499,14 +491,14 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 7 };
+        let valid_piece_position = CoordinatesImpl::new(2, 7);
 
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
         let current_piece = world.read_model((session_id, valid_piece_position));
-        let new_coordinates_position = Coordinates { row: 3, col: 8 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 8);
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
     #[test]
@@ -520,7 +512,7 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 1 };
+        let valid_piece_position = CoordinatesImpl::new(2, 1);
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
@@ -536,7 +528,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position = Coordinates { row: 3, col: 0 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 0);
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -569,7 +561,7 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 3 };
+        let valid_piece_position = CoordinatesImpl::new(2, 3);
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
         assert(
             initial_piece_position.row == 2 && initial_piece_position.col == 3,
@@ -584,7 +576,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position = Coordinates { row: 3, col: 2 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 2);
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -617,7 +609,7 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 5 };
+        let valid_piece_position = CoordinatesImpl::new(2, 5);
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
@@ -633,7 +625,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position = Coordinates { row: 3, col: 4 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 4);
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -667,7 +659,7 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 7 };
+        let valid_piece_position = CoordinatesImpl::new(2, 7);
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
@@ -683,7 +675,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position = Coordinates { row: 3, col: 6 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 6);
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -717,7 +709,7 @@ mod tests {
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        let valid_piece_position = Coordinates { row: 2, col: 1 };
+        let valid_piece_position = CoordinatesImpl::new(2, 1);
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
@@ -733,7 +725,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position = Coordinates { row: 3, col: 2 };
+        let new_coordinates_position = CoordinatesImpl::new(3, 2);
         actions_system.move_piece(initial_piece_position, new_coordinates_position);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -767,8 +759,8 @@ mod tests {
         actions_system.join_lobby(session_id);
 
         // Test initial position 21 & 56
-        let valid_piece_position21 = Coordinates { row: 2, col: 1 };
-        let valid_piece_position56 = Coordinates { row: 5, col: 6 };
+        let valid_piece_position21 = CoordinatesImpl::new(2, 1);
+        let valid_piece_position56 = CoordinatesImpl::new(5, 6);
         let initial_pieces_keys: Array<(u64, Coordinates)> = array![
             (session_id, valid_piece_position21), (session_id, valid_piece_position56),
         ];
@@ -793,7 +785,7 @@ mod tests {
         assert(can_choose_piece21, 'can_choose_piece 21 failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
+        let new_coordinates_position32 = CoordinatesImpl::new(3, 2);
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -812,7 +804,7 @@ mod tests {
         assert(can_choose_piece56, 'can_choose_piece 56 failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position45 = Coordinates { row: 4, col: 5 };
+        let new_coordinates_position45 = CoordinatesImpl::new(4, 5);
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position45);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -862,8 +854,8 @@ mod tests {
         starknet::testing::set_contract_address(starknet::contract_address_const::<0x0>());
 
         // Test initial position 21 & 54
-        let valid_piece_position21 = Coordinates { row: 2, col: 1 };
-        let valid_piece_position54 = Coordinates { row: 5, col: 4 };
+        let valid_piece_position21 = CoordinatesImpl::new(2, 1);
+        let valid_piece_position54 = CoordinatesImpl::new(5, 4);
         let initial_pieces_keys: Array<(u64, Coordinates)> = array![
             (session_id, valid_piece_position21), (session_id, valid_piece_position54),
         ];
@@ -888,7 +880,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece 21 failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
+        let new_coordinates_position32 = CoordinatesImpl::new(3, 2);
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -907,7 +899,7 @@ mod tests {
         assert(can_choose_piece, 'can_choose_piece 54 failed');
 
         clear_world_event_log(world.dispatcher.contract_address);
-        let new_coordinates_position43 = Coordinates { row: 4, col: 3 };
+        let new_coordinates_position43 = CoordinatesImpl::new(4, 3);
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position43);
         let emitted_events = retrieve_emitted_events(world);
         ensure_moved_event(
@@ -938,8 +930,8 @@ mod tests {
         };
 
         // Test position 32 moves to eat 43 then jump to 54
-        let eat_position = Coordinates { row: 4, col: 3 };
-        let jump_position = Coordinates { row: 5, col: 4 };
+        let eat_position = CoordinatesImpl::new(4, 3);
+        let jump_position = CoordinatesImpl::new(5, 4);
 
         clear_world_event_log(world.dispatcher.contract_address);
         actions_system.move_piece(*new_positions[0], eat_position);
@@ -1007,14 +999,14 @@ mod tests {
         starknet::testing::set_contract_address(starknet::contract_address_const::<0x0>());
 
         // All coordinates needed for test
-        let pos_25 = Coordinates { row: 2, col: 5 };
-        let pos_30 = Coordinates { row: 3, col: 0 };
-        let pos_34 = Coordinates { row: 3, col: 4 };
-        let pos_41 = Coordinates { row: 4, col: 1 };
-        let pos_43 = Coordinates { row: 4, col: 3 };
-        let pos_52 = Coordinates { row: 5, col: 2 };
-        let pos_61 = Coordinates { row: 6, col: 1 };
-        let pos_70 = Coordinates { row: 7, col: 0 };
+        let pos_25 = CoordinatesImpl::new(2, 5);
+        let pos_30 = CoordinatesImpl::new(3, 0);
+        let pos_34 = CoordinatesImpl::new(3, 4);
+        let pos_41 = CoordinatesImpl::new(4, 1);
+        let pos_43 = CoordinatesImpl::new(4, 3);
+        let pos_52 = CoordinatesImpl::new(5, 2);
+        let pos_61 = CoordinatesImpl::new(6, 1);
+        let pos_70 = CoordinatesImpl::new(7, 0);
 
         // Arrange board for test
         let pieces_keys: Array<(u64, Coordinates)> = array![
@@ -1134,15 +1126,15 @@ mod tests {
         starknet::testing::set_contract_address(player1);
 
         // Arrange piece 05 -> 34, make space for double jump
-        let pos_05 = Coordinates { row: 0, col: 5 };
-        let pos_14 = Coordinates { row: 1, col: 4 };
-        let pos_23 = Coordinates { row: 2, col: 3 };
-        let pos_32 = Coordinates { row: 3, col: 2 };
-        let pos_34 = Coordinates { row: 3, col: 4 };
-        let pos_41 = Coordinates { row: 4, col: 1 };
-        let pos_47 = Coordinates { row: 4, col: 1 };
-        let pos_50 = Coordinates { row: 5, col: 0 };
-        let pos_56 = Coordinates { row: 5, col: 0 };
+        let pos_05 = CoordinatesImpl::new(0, 5);
+        let pos_14 = CoordinatesImpl::new(1, 4);
+        let pos_23 = CoordinatesImpl::new(2, 3);
+        let pos_32 = CoordinatesImpl::new(3, 2);
+        let pos_34 = CoordinatesImpl::new(3, 4);
+        let pos_41 = CoordinatesImpl::new(4, 1);
+        let pos_47 = CoordinatesImpl::new(4, 1);
+        let pos_50 = CoordinatesImpl::new(5, 0);
+        let pos_56 = CoordinatesImpl::new(5, 0);
 
         let pieces_keys: Array<(u64, Coordinates)> = array![
             (session_id, pos_50), (session_id, pos_23), (session_id, pos_56), (session_id, pos_05),
@@ -1210,13 +1202,13 @@ mod tests {
         starknet::testing::set_contract_address(player1);
 
         // Arrange pieces for double zigzag
-        let pos_23 = Coordinates { row: 2, col: 3 };
-        let pos_32 = Coordinates { row: 3, col: 2 };
-        let pos_41 = Coordinates { row: 4, col: 1 };
-        let pos_43 = Coordinates { row: 4, col: 3 };
-        let pos_50 = Coordinates { row: 5, col: 0 };
-        let pos_61 = Coordinates { row: 6, col: 1 };
-        let pos_72 = Coordinates { row: 7, col: 2 };
+        let pos_23 = CoordinatesImpl::new(2, 3);
+        let pos_32 = CoordinatesImpl::new(3, 2);
+        let pos_41 = CoordinatesImpl::new(4, 1);
+        let pos_43 = CoordinatesImpl::new(4, 3);
+        let pos_50 = CoordinatesImpl::new(5, 0);
+        let pos_61 = CoordinatesImpl::new(6, 1);
+        let pos_72 = CoordinatesImpl::new(7, 2);
 
         let pieces_keys: Array<(u64, Coordinates)> = array![
             (session_id, pos_72), (session_id, pos_23), (session_id, pos_50),
@@ -1285,25 +1277,25 @@ mod tests {
         starknet::testing::set_contract_address(player1);
 
         // All needed coordinates for test
-        let pos_05 = Coordinates { row: 0, col: 5 };
-        let pos_14 = Coordinates { row: 1, col: 4 };
-        let pos_16 = Coordinates { row: 1, col: 6 };
-        let pos_23 = Coordinates { row: 2, col: 3 };
-        let pos_25 = Coordinates { row: 2, col: 5 };
-        let pos_27 = Coordinates { row: 2, col: 7 };
-        let pos_30 = Coordinates { row: 3, col: 0 };
-        let pos_32 = Coordinates { row: 3, col: 2 };
-        let pos_34 = Coordinates { row: 3, col: 4 };
-        let pos_36 = Coordinates { row: 3, col: 6 };
-        let pos_41 = Coordinates { row: 4, col: 1 };
-        let pos_43 = Coordinates { row: 4, col: 3 };
-        let pos_45 = Coordinates { row: 4, col: 5 };
-        let pos_47 = Coordinates { row: 4, col: 7 };
-        let pos_50 = Coordinates { row: 5, col: 0 };
-        let pos_54 = Coordinates { row: 5, col: 4 };
-        let pos_56 = Coordinates { row: 5, col: 6 };
-        let pos_61 = Coordinates { row: 6, col: 1 };
-        let pos_70 = Coordinates { row: 7, col: 0 };
+        let pos_05 = CoordinatesImpl::new(0, 5);
+        let pos_14 = CoordinatesImpl::new(1, 4);
+        let pos_16 = CoordinatesImpl::new(1, 6);
+        let pos_23 = CoordinatesImpl::new(2, 3);
+        let pos_25 = CoordinatesImpl::new(2, 5);
+        let pos_27 = CoordinatesImpl::new(2, 7);
+        let pos_30 = CoordinatesImpl::new(3, 0);
+        let pos_32 = CoordinatesImpl::new(3, 2);
+        let pos_34 = CoordinatesImpl::new(3, 4);
+        let pos_36 = CoordinatesImpl::new(3, 6);
+        let pos_41 = CoordinatesImpl::new(4, 1);
+        let pos_43 = CoordinatesImpl::new(4, 3);
+        let pos_45 = CoordinatesImpl::new(4, 5);
+        let pos_47 = CoordinatesImpl::new(4, 7);
+        let pos_50 = CoordinatesImpl::new(5, 0);
+        let pos_54 = CoordinatesImpl::new(5, 4);
+        let pos_56 = CoordinatesImpl::new(5, 6);
+        let pos_61 = CoordinatesImpl::new(6, 1);
+        let pos_70 = CoordinatesImpl::new(7, 0);
 
         // Arrange pieces for scenario
         let pieces_keys: Array<(u64, Coordinates)> = array![
@@ -1406,20 +1398,20 @@ mod tests {
         starknet::testing::set_contract_address(player1);
 
         // All needed coordinates for test
-        let pos_05 = Coordinates { row: 0, col: 5 };
-        let pos_16 = Coordinates { row: 1, col: 6 };
-        let pos_27 = Coordinates { row: 2, col: 7 };
-        let pos_30 = Coordinates { row: 3, col: 0 };
-        let pos_32 = Coordinates { row: 3, col: 2 };
-        let pos_41 = Coordinates { row: 4, col: 1 };
-        let pos_43 = Coordinates { row: 4, col: 3 };
-        let pos_45 = Coordinates { row: 4, col: 5 };
-        let pos_50 = Coordinates { row: 5, col: 0 };
-        let pos_52 = Coordinates { row: 5, col: 2 };
-        let pos_54 = Coordinates { row: 5, col: 4 };
-        let pos_61 = Coordinates { row: 6, col: 1 };
-        let pos_63 = Coordinates { row: 6, col: 3 };
-        let pos_72 = Coordinates { row: 7, col: 2 };
+        let pos_05 = CoordinatesImpl::new(0, 5);
+        let pos_16 = CoordinatesImpl::new(1, 6);
+        let pos_27 = CoordinatesImpl::new(2, 7);
+        let pos_30 = CoordinatesImpl::new(3, 0);
+        let pos_32 = CoordinatesImpl::new(3, 2);
+        let pos_41 = CoordinatesImpl::new(4, 1);
+        let pos_43 = CoordinatesImpl::new(4, 3);
+        let pos_45 = CoordinatesImpl::new(4, 5);
+        let pos_50 = CoordinatesImpl::new(5, 0);
+        let pos_52 = CoordinatesImpl::new(5, 2);
+        let pos_54 = CoordinatesImpl::new(5, 4);
+        let pos_61 = CoordinatesImpl::new(6, 1);
+        let pos_63 = CoordinatesImpl::new(6, 3);
+        let pos_72 = CoordinatesImpl::new(7, 2);
 
         // Arrange pieces for scenario
         let pieces_keys: Array<(u64, Coordinates)> = array![
@@ -1554,8 +1546,8 @@ mod tests {
         assert!(session.state == 1, "wrong session state");
 
         // Test initial position 21 & 56
-        let valid_piece_position21 = Coordinates { row: 2, col: 1 };
-        let valid_piece_position56 = Coordinates { row: 5, col: 6 };
+        let valid_piece_position21 = CoordinatesImpl::new(2, 1);
+        let valid_piece_position56 = CoordinatesImpl::new(5, 6);
         let initial_pieces_keys: Array<(u64, Coordinates)> = array![
             (session_id, valid_piece_position21), (session_id, valid_piece_position56),
         ];
@@ -1578,7 +1570,7 @@ mod tests {
         let can_choose_piece21 = actions_system
             .can_choose_piece(Position::Up, valid_piece_position21, session_id);
         assert(can_choose_piece21, 'can_choose_piece 21 failed');
-        let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
+        let new_coordinates_position32 = CoordinatesImpl::new(3, 2);
         actions_system.move_piece(*initial_pieces[0], new_coordinates_position32);
 
         // Check if turn changed for player 2
@@ -1588,7 +1580,7 @@ mod tests {
         let can_choose_piece56 = actions_system
             .can_choose_piece(Position::Down, valid_piece_position56, session_id);
         assert(can_choose_piece56, 'can_choose_piece 56 failed');
-        let new_coordinates_position45 = Coordinates { row: 4, col: 5 };
+        let new_coordinates_position45 = CoordinatesImpl::new(4, 5);
         actions_system.move_piece(*initial_pieces[1], new_coordinates_position45);
 
         // Check if turn changed back to player 1
