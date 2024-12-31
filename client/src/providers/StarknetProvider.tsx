@@ -41,12 +41,12 @@ export const connector = new ControllerConnector({
       method: "get_session_id",
     },
   ],
-  rpc: "https://api.cartridge.gg/x/checkers-controller-1/katana",
+  rpc: "https://api.cartridge.gg/x/checkers-scaffold/katana",
 }) as never as Connector;
 
 function provider() {
   return new RpcProvider({
-    nodeUrl: "https://api.cartridge.gg/x/checkers-controller-1/katana",
+    nodeUrl: "https://api.cartridge.gg/x/checkers-scaffold/katana",
   });
 }
 

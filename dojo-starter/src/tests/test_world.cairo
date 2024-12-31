@@ -20,8 +20,7 @@ mod tests {
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
-            namespace: "checkers_marq",
-            resources: [
+            namespace: "checkers_marq", resources: [
                 TestResource::Model(m_Piece::TEST_CLASS_HASH),
                 TestResource::Model(m_Session::TEST_CLASS_HASH),
                 TestResource::Model(m_Player::TEST_CLASS_HASH),
@@ -31,8 +30,7 @@ mod tests {
                 TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
                 TestResource::Event(actions::e_King::TEST_CLASS_HASH),
                 TestResource::Contract(actions::TEST_CLASS_HASH),
-            ]
-                .span(),
+            ].span(),
         };
 
         ndef
@@ -42,8 +40,7 @@ mod tests {
         [
             ContractDefTrait::new(@"checkers_marq", @"actions")
                 .with_writer_of([dojo::utils::bytearray_hash(@"checkers_marq")].span())
-        ]
-            .span()
+        ].span()
     }
 
     fn clear_world_event_log(contract_address: starknet::ContractAddress) {
@@ -773,11 +770,12 @@ mod tests {
         assert(
             *initial_pieces[1].row == 5 && *initial_pieces[1].col == 6, 'wrong initial piece 56',
         );
-        for piece in initial_pieces.clone() {
-            assert(piece.session_id == 0, 'wrong session');
-            assert(piece.is_king == false, 'wrong initial piece');
-            assert(piece.is_alive == true, 'wrong initial piece');
-        };
+        for piece in initial_pieces
+            .clone() {
+                assert(piece.session_id == 0, 'wrong session');
+                assert(piece.is_king == false, 'wrong initial piece');
+                assert(piece.is_alive == true, 'wrong initial piece');
+            };
 
         // Test move to positions 32 & 45
         let can_choose_piece21 = actions_system
@@ -868,11 +866,12 @@ mod tests {
         assert(
             *initial_pieces[1].row == 5 && *initial_pieces[1].col == 4, 'wrong initial piece 54',
         );
-        for piece in initial_pieces.clone() {
-            assert(piece.session_id == 0, 'wrong session');
-            assert(piece.is_king == false, 'wrong initial piece');
-            assert(piece.is_alive == true, 'wrong initial piece');
-        };
+        for piece in initial_pieces
+            .clone() {
+                assert(piece.session_id == 0, 'wrong session');
+                assert(piece.is_king == false, 'wrong initial piece');
+                assert(piece.is_alive == true, 'wrong initial piece');
+            };
 
         // Test move to position 32 & 43
         let can_choose_piece = actions_system
@@ -923,11 +922,12 @@ mod tests {
         assert!(*new_positions[0].col == 2, "piece y is wrong");
         assert!(*new_positions[1].row == 4, "piece x is wrong");
         assert!(*new_positions[1].col == 3, "piece y is wrong");
-        for new_position in new_positions.clone() {
-            assert!(new_position.session_id == 0, "wrong session");
-            assert!(new_position.is_alive == true, "piece is not alive");
-            assert!(new_position.is_king == false, "piece is king");
-        };
+        for new_position in new_positions
+            .clone() {
+                assert!(new_position.session_id == 0, "wrong session");
+                assert!(new_position.is_alive == true, "piece is not alive");
+                assert!(new_position.is_king == false, "piece is king");
+            };
 
         // Test position 32 moves to eat 43 then jump to 54
         let eat_position = CoordinatesImpl::new(4, 3);
@@ -1017,11 +1017,12 @@ mod tests {
         assert(*pieces[1].row == 5 && *pieces[1].col == 2, 'wrong initial piece 52');
         assert(*pieces[2].row == 6 && *pieces[2].col == 1, 'wrong initial piece 61');
         assert(*pieces[3].row == 7 && *pieces[3].col == 0, 'wrong initial piece 70');
-        for piece in pieces.clone() {
-            assert(piece.session_id == 0, 'wrong session');
-            assert(piece.is_king == false, 'wrong initial piece');
-            assert(piece.is_alive == true, 'wrong initial piece');
-        };
+        for piece in pieces
+            .clone() {
+                assert(piece.session_id == 0, 'wrong session');
+                assert(piece.is_king == false, 'wrong initial piece');
+                assert(piece.is_alive == true, 'wrong initial piece');
+            };
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, pos_25, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
@@ -1045,11 +1046,12 @@ mod tests {
         assert!(*pieces[1].position == Position::Down, "piece 30 is not right team");
         assert!(*pieces[2].position == Position::Down, "piece 41 is not right team");
         assert!(*pieces[3].position == Position::Down, "piece 61 is not right team");
-        for piece in pieces.clone() {
-            assert(piece.session_id == 0, 'wrong session');
-            assert(piece.is_king == false, 'wrong initial piece');
-            assert(piece.is_alive == true, 'wrong initial piece');
-        };
+        for piece in pieces
+            .clone() {
+                assert(piece.session_id == 0, 'wrong session');
+                assert(piece.is_king == false, 'wrong initial piece');
+                assert(piece.is_alive == true, 'wrong initial piece');
+            };
 
         // Test move 34 -> 43 -> 52 eat 61 becomes king (70) & move to 34
         actions_system.move_piece(*pieces[0], pos_43);
@@ -1560,11 +1562,12 @@ mod tests {
         assert(
             *initial_pieces[1].row == 5 && *initial_pieces[1].col == 6, 'wrong initial piece 56',
         );
-        for piece in initial_pieces.clone() {
-            assert(piece.session_id == 0, 'wrong session');
-            assert(piece.is_king == false, 'piece is king');
-            assert(piece.is_alive == true, 'piece is not alive');
-        };
+        for piece in initial_pieces
+            .clone() {
+                assert(piece.session_id == 0, 'wrong session');
+                assert(piece.is_king == false, 'piece is king');
+                assert(piece.is_alive == true, 'piece is not alive');
+            };
 
         // Test move to positions 32 & 45
         let can_choose_piece21 = actions_system
