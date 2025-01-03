@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
-// import { useDojo } from "../hooks/useDojo.tsx";
+import { useDojo } from "../hooks/useDojo.tsx";
 import ControllerButton from '../connector/ControllerButton';
+import CreateBurner from '../connector/CreateBurner.tsx';
 
 import InitGameBackground from "../assets/InitGameBackground.png";
 import CreateGame from "../assets/CreateGame.png";
@@ -114,6 +115,7 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
+        <CreateBurner/>
         <ControllerButton />
       </div>
 
