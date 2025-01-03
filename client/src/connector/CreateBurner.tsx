@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDojo } from "../hooks/useDojo.tsx";
 import ConnectWallet from "../assets/ConnectWallet.png";
 
 const CreateBurner: React.FC = () => {
   const { account } = useDojo();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [burnerList, setBurnerList] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (account) {
+      updateBurnerList();
+    }
+  }, [account]);
+
+  const updateBurnerList = () => {
+    if (account?.list) {
+      setBurnerList(account.list().map(acc => acc.address));
+    }
+  };
 
   const handleCreateBurner = async () => {
-    if (account) {
-      await account.create();
+    try {
+      if (account?.create) {
+        await account.create();
+        updateBurnerList();
+      }
+    } catch (error) {
+      console.error("Error creating burner:", error);
     }
   };
 
@@ -17,17 +35,27 @@ const CreateBurner: React.FC = () => {
   };
 
   const handleSelectAccount = (address: string) => {
-    account?.select(address);
-    setIsDropdownOpen(false);
+    if (account?.select) {
+      account.select(address);
+      updateBurnerList();
+      setIsDropdownOpen(false);
+    }
   };
 
   const handleClearBurners = async () => {
-    await account.clear();
-    account.select("");
-    setIsDropdownOpen(false);
+    try {
+      if (account?.clear) {
+        await account.clear();
+        account.select("");
+        updateBurnerList();
+        setIsDropdownOpen(false);
+      }
+    } catch (error) {
+      console.error("Error clearing burners:", error);
+    }
   };
 
-  const slicedAddress = account?.account.address
+  const slicedAddress = account?.account?.address
     ? `${account.account.address.slice(0, 5)}...${account.account.address.slice(-4)}`
     : "Connect Wallet";
 
@@ -37,7 +65,7 @@ const CreateBurner: React.FC = () => {
         onClick={handleToggleDropdown}
         className="flex items-center rounded-md overflow-hidden font-bold cursor-pointer pl-2"
         style={{
-          background: "linear-gradient(to right, #EE7921 40%, #520066 40%)", // Gradiente con amarillo y violeta
+          background: "linear-gradient(to right, #EE7921 40%, #520066 40%)", // Gradient with orange and purple
           color: "white",
           width: "240px",
           height: "40px",
@@ -52,7 +80,7 @@ const CreateBurner: React.FC = () => {
           }}
         />
         <span
-          className="flex-grow text-right" // Texto alineado a la derecha
+          className="flex-grow text-right" // Text aligned to the right
           style={{
             lineHeight: "40px",
             marginRight: "5px",
@@ -64,13 +92,15 @@ const CreateBurner: React.FC = () => {
           className={`ml-2 transform transition-transform duration-300 ${
             isDropdownOpen ? "rotate-180" : ""
           }`}
-          style={{ 
+          style={{
             color: "white",
-            marginRight: "10px" }} 
+            marginRight: "10px"
+          }}
         >
           ▼
         </span>
       </button>
+
       {isDropdownOpen && (
         <div
           className="absolute mt-2 w-64 z-10 rounded-md shadow-lg"
@@ -91,28 +121,30 @@ const CreateBurner: React.FC = () => {
             <select
               id="signer-select"
               className="w-full px-3 py-2 text-sm bg-white text-gray-800 rounded-md focus:outline-none"
-              value={account?.account.address || ""}
+              value={account?.account?.address || ""}
               onChange={(e) => handleSelectAccount(e.target.value)}
             >
-              {account?.list().map((acc, index) => (
-                <option value={acc.address} key={index} className="text-gray-800">
-                  {acc.address}
+              {burnerList.map((address, index) => (
+                <option value={address} key={index} className="text-gray-800">
+                  {address}
                 </option>
               ))}
             </select>
           </div>
-          <button
-            className="w-full mb-2 bg-[#520066] hover:bg-[#6A0080] text-white font-semibold text-sm py-1 px-3 rounded-md transition duration-300 ease-in-out"
-            onClick={handleCreateBurner}
-          >
-            Create New Burner
-          </button>
-          <button
-            className="w-full bg-[#520066] hover:bg-[#6A0080] text-white font-semibold text-sm py-1 px-3 rounded-md transition duration-300 ease-in-out"
-            onClick={handleClearBurners}
-          >
-            Clear Burners
-          </button>
+          <div className="p-2 space-y-2">
+            <button
+              className="w-full px-4 py-2 bg-[#520066] hover:bg-[#6A0080] text-white font-semibold text-sm rounded-md transition duration-300 ease-in-out flex items-center justify-center space-x-2"
+              onClick={handleCreateBurner}
+            >
+              <span>Create New Burner</span>
+            </button>
+            <button
+              className="w-full px-4 py-2 bg-[#520066] hover:bg-[#6A0080] text-white font-semibold text-sm rounded-md transition duration-300 ease-in-out flex items-center justify-center space-x-2"
+              onClick={handleClearBurners}
+            >
+              <span>Clear Burners</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

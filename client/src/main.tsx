@@ -1,13 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Importa Routes y Route
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import { init } from "@dojoengine/sdk";
 import { schema } from "./bindings.ts";
 import { dojoConfig } from "../dojoConfig.ts";
 import { DojoContextProvider } from "./DojoContext.tsx";
-// import { setupBurnerManager } from "@dojoengine/create-burner";
-import Home from "./components/Home.tsx";
+import { setupBurnerManager } from "@dojoengine/create-burner";
 import Checker from "./components/Checker.tsx";
 import JoinRoom from "./components/JoinRoom.tsx";
 import InitGame from "./components/InitGame.tsx";
@@ -34,23 +33,22 @@ async function main() {
     );
 
     createRoot(document.getElementById("root")!).render(
-      <StrictMode>
-        <Router>
-            <DojoContextProvider
-              // burnerManager={await setupBurnerManager(dojoConfig)}
-          >
-          <StarknetProvider>
-              <Routes>
-                {/* <Route path="/" element={<Home />} /> */}
-                <Route path="/" element={<InitGame sdk={sdk} />} />
-                <Route path="/joinroom" element={<JoinRoom sdk={sdk} />} />
-                <Route path="/creategame" element={<CreateGame sdk={sdk} />} />
-                <Route path="/checkers" element={<Checker sdk={sdk} />} />
-              </Routes>
-          </StarknetProvider>
-            </DojoContextProvider>
-        </Router>
-      </StrictMode>
+        <StrictMode>
+            <Router>
+                <DojoContextProvider
+                    burnerManager={await setupBurnerManager(dojoConfig)}
+                >
+                    <StarknetProvider>
+                        <Routes>
+                            <Route path="/" element={<InitGame sdk={sdk} />} />
+                            <Route path="/joinroom" element={<JoinRoom sdk={sdk} />} />
+                            <Route path="/creategame" element={<CreateGame sdk={sdk} />} />
+                            <Route path="/checkers" element={<Checker sdk={sdk} />} />
+                        </Routes>
+                    </StarknetProvider>
+                </DojoContextProvider>
+            </Router>
+        </StrictMode>
     );
 }
 

@@ -5,16 +5,13 @@ export const useDojo = () => {
     const context = useContext(DojoContext);
 
     if (!context) {
-        throw new Error(
-            "The `useDojo` hook must be used within a `DojoProvider`"
-        );
+        throw new Error("The `useDojo` hook must be used within a `DojoProvider`");
     }
 
-    // const { account, ...setup } = context;
-    const {...setup} = context;
+    const { account, ...setup } = context;
 
     return {
         setup,
-        // account,
+        account,
     };
 };
