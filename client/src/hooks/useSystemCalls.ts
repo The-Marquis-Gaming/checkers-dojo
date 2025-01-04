@@ -7,25 +7,33 @@ export const useSystemCalls = () => {
 
     const {
         setup: { setupWorld },
-        // account: { account },
+         account: { account: burner },
     } = useDojo();
     const {account} = useAccount();
 
 
-    const createLobby = async () =>{
-        try {
-          const createLobby = await(await setupWorld.actions).createLobby(
-            (account as Account)
+    const createLobby = async () => {
+      try {
+          const activeAccount = account || burner;
+          
+          if (!activeAccount) {
+              throw new Error('No valid account found');
+          }
+  
+          const createLobby = await (await setupWorld.actions).createLobby(
+              activeAccount as Account
           );
           return createLobby;
-        } catch (error) {
+      } catch (error) {
           throw new Error(`createLobby failed: ${error}`);
-        } 
-    }
+      }
+  };
 
     const getSessionId= async()=>{
       try{
-        const id= await (await setupWorld.actions).getSessionId((account as Account));
+        const activeAccount = account || burner;
+
+        const id= await (await setupWorld.actions).getSessionId((activeAccount as Account));
         console.log(id,'id')
         return id
       } catch(err){

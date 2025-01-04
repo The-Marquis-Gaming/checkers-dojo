@@ -6,6 +6,7 @@ import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
 import ControllerButton from '../connector/ControllerButton';
+import CreateBurner from "../connector/CreateBurner";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
@@ -363,6 +364,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <ControllerButton />
+        <CreateBurner/>
       </div>
       
       {isGameOver && <GameOver />}

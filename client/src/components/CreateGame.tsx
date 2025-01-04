@@ -1,47 +1,65 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import ControllerButton from '../connector/ControllerButton';
-//this can be use for local development
-// import { useDojo } from "../hooks/useDojo";
-// import CreateBurner from "../connector/CreateBurner";
+import { useAccount } from '@starknet-react/core';
 
 import LoadingCreate from "../assets/LoadingCreate.png";
 import ChoicePlayer from "../assets/ChoicePlayer.png";
 import ButtonCreate from "../assets/ButtonCreate.png";
-
 import InitGameBackground from "../assets/InitGameBackground.png";
 import Return from "../assets/Return.png";
 import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Player3 from "../assets/Player3_0.png";
 import Player4 from "../assets/Player4_0.png";
-import { useAccount } from '@starknet-react/core';
-
+import { useDojo } from '../hooks/useDojo.tsx';
 
 function CreateGame({ }: { sdk: SDK<typeof schema> }) {
-  // const { account } = useDojo();
-  const account = useAccount();
-  // const { createLobby } = useSystemCalls();
+  const { account: burner } = useDojo();
+  const {account} = useAccount();
   const navigate = useNavigate();
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleCreateRoom = async () => {
-    try {
-      if (account) {
-       
-        navigate('/checkers');
-      } else {
-        console.warn("Account not connected");
-      }
-    } catch (error) {
-      console.error("Error creating the game:", error);
+  const activeAccount = account || burner.account;
+
+  useEffect(() => {
+    if (!activeAccount.address) {
+      navigate('/');
     }
-  };
+  }, [activeAccount, navigate]);
 
   const handlePlayerSelect = (playerIndex: number) => {
     setSelectedPlayer(playerIndex);
+    setError(null);
+  };
+
+  const handleCreateRoom = async () => {
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      if (!activeAccount.address) {
+        throw new Error('Account not connected');
+      }
+
+      if (selectedPlayer === null) {
+        throw new Error('Please select a player avatar');
+      }
+
+      localStorage.setItem('selectedPlayer', selectedPlayer.toString());
+      localStorage.setItem('playerAddress', activeAccount.address);
+
+      navigate('/checkers');
+    } catch (error) {
+      console.error("Error creating game:", error);
+      setError(error instanceof Error ? error.message : 'Failed to create game');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const playerImages = [Player1, Player2, Player3, Player4];
@@ -56,7 +74,6 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         position: "relative",
         overflow: "hidden",
       }}>
-      {/* Dark background filter */}
       <div
         style={{
           position: "absolute",
@@ -69,7 +86,6 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         }}
       />
 
-      {/* Return button  */}
       <button
         onClick={() => {
           window.location.href = "/joinroom";
@@ -116,10 +132,9 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
           fontWeight: "bold",
           zIndex: 5,
         }}>
-        JOIN ROOM
+        CREATE GAME
       </div>
 
-      {/* Loading bar */}
       <div
         style={{
           position: "absolute",
@@ -132,7 +147,7 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         }}>
         <img
           src={LoadingCreate}
-          alt="Cargando"
+          alt="Loading"
           style={{
             width: "100%",
             height: "100%",
@@ -140,7 +155,6 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         />
       </div>
 
-      {/* ChoicePlayer */}
       <div
         style={{
           position: "absolute",
@@ -171,7 +185,6 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         />
       </div>
 
-      {/* Character selector */}
       <div
         style={{
           position: "absolute",
@@ -201,9 +214,24 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         ))}
       </div>
 
-      {/* Button of "Create Game" */}
+      {error && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "300px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            color: "#ff4444",
+            fontSize: "18px",
+            zIndex: 5,
+          }}>
+          {error}
+        </div>
+      )}
+
       <button
         onClick={handleCreateRoom}
+        disabled={isProcessing || selectedPlayer === null}
         style={{
           position: "absolute",
           bottom: "200px",
@@ -215,10 +243,12 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
           padding: "46px 279px",
           borderRadius: "5px",
           fontWeight: "bold",
-          cursor: "pointer",
+          cursor: isProcessing || selectedPlayer === null ? "not-allowed" : "pointer",
           border: "none",
           zIndex: 2,
-        }}></button>
+          opacity: isProcessing || selectedPlayer === null ? 0.7 : 1,
+        }}>
+      </button>
     </div>
   );
 }
