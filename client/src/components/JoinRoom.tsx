@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
-import { useAccount } from '@starknet-react/core';
-import { Account } from 'starknet';
-import ControllerButton from '../connector/ControllerButton';
-import CreateBurner from '../connector/CreateBurner';
+import { useAccount } from "@starknet-react/core";
+import { Account } from "starknet";
+import ControllerButton from "../connector/ControllerButton";
+import CreateBurner from "../connector/CreateBurner";
 
 import LoadingRoom from "../assets/LoadingCreate.png";
 import InitGameBackground from "../assets/InitGameBackground.png";
@@ -14,7 +14,7 @@ import Return from "../assets/Return.png";
 import JoinGameRectangule from "../assets/JoinGameRectangule.png";
 import ConfirmJoin from "../assets/ConfirmJoin.png";
 
-function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
+function JoinRoom({}: { sdk: SDK<typeof schema> }) {
   const {
     setup: { setupWorld },
     account: { account: burner },
@@ -28,7 +28,7 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
 
   useEffect(() => {
     if (!activeAccount?.address) {
-      navigate('/');
+      navigate("/");
     }
   }, [activeAccount, navigate]);
 
@@ -38,15 +38,15 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
 
     try {
       if (!activeAccount?.address) {
-        throw new Error('Account not connected');
+        throw new Error("Account not connected");
       }
 
       await (await setupWorld.actions).joinLobby(activeAccount as Account, 0);
-      localStorage.setItem('playerAddress', activeAccount.address);
+      localStorage.setItem("playerAddress", activeAccount.address);
       navigate("/creategame");
     } catch (error) {
       console.error("Error joining room:", error);
-      setError(error instanceof Error ? error.message : 'Failed to join room');
+      setError(error instanceof Error ? error.message : "Failed to join room");
     } finally {
       setIsProcessing(false);
     }
@@ -61,7 +61,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
         height: "100vh",
         position: "relative",
         overflow: "hidden",
-      }}>
+      }}
+    >
       <div
         style={{
           position: "absolute",
@@ -86,7 +87,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           border: "none",
           cursor: "pointer",
           zIndex: 2,
-        }}>
+        }}
+      >
         <img
           src={Return}
           alt="Return"
@@ -105,9 +107,10 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           display: "flex",
           gap: "20px",
           zIndex: 2,
-        }}>
-        <ControllerButton />
+        }}
+      >
         <CreateBurner />
+        <ControllerButton />
       </div>
 
       <div
@@ -120,7 +123,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           fontSize: "32px",
           fontWeight: "bold",
           zIndex: 5,
-        }}>
+        }}
+      >
         JOIN ROOM
       </div>
 
@@ -133,7 +137,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           width: "1500px",
           height: "10px",
           zIndex: 5,
-        }}>
+        }}
+      >
         <img
           src={LoadingRoom}
           alt="Loading"
@@ -154,7 +159,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           fontSize: "24px",
           fontWeight: "bold",
           zIndex: 5,
-        }}>
+        }}
+      >
         Room ID
       </div>
 
@@ -175,7 +181,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           fontSize: "24px",
           fontWeight: "bold",
           zIndex: 5,
-        }}>
+        }}
+      >
         0
       </div>
 
@@ -189,7 +196,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
             color: "#ff4444",
             fontSize: "18px",
             zIndex: 5,
-          }}>
+          }}
+        >
           {error}
         </div>
       )}
@@ -209,11 +217,13 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           color: "white",
           fontSize: "24px",
           fontWeight: "bold",
-          cursor: isProcessing || !activeAccount?.address ? "not-allowed" : "pointer",
+          cursor:
+            isProcessing || !activeAccount?.address ? "not-allowed" : "pointer",
           border: "none",
           zIndex: 5,
           opacity: isProcessing || !activeAccount?.address ? 0.7 : 1,
-        }}>
+        }}
+      >
         {isProcessing ? "Processing..." : "Confirm"}
       </button>
     </div>
