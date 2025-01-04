@@ -24,7 +24,7 @@ export const useDojoStore = createDojoStore<typeof schema>();
 
 function Checker({ }: { sdk: SDK<typeof schema> }) {
   const {
-    // account: { account },
+     account: { account : burner },
     setup: { setupWorld },
   } = useDojo();
 
@@ -42,11 +42,12 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
   const [upPieces, setUpPieces] = useState<PieceUI[]>([]);
   const [downPieces, setDownPieces] = useState<PieceUI[]>([]);
+  const activeAccount = account || burner;
 
     useEffect(() => {
-      if (account?.address) {
+      if (activeAccount?.address) {
         const { initialBlackPieces, initialOrangePieces } = createInitialPieces(
-          account.address
+          activeAccount.address
         );
         setUpPieces(initialBlackPieces);
         setDownPieces(initialOrangePieces);
