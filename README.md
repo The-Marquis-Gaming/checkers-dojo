@@ -115,6 +115,23 @@ After completing the steps above, access the Checkers game by navigating to `htt
 
 ---
 
+### Burner Wallet Gameplay
+If you cannot use the Cartridge Controller, you can still play Checkers using Burner Wallets. This alternative method provides a seamless gaming experience:
+
+- Create multiple Burner Wallets instantly for gameplay
+- Delete Burner Wallets at any time
+- No controller installation required
+- Quick and easy account management
+- Start playing immediately after wallet creation
+
+To use Burner Wallets:
+1. Navigate to the game interface
+2. Click on "Create Burner Wallet"
+3. Your new wallet will be generated automatically
+4. Start playing immediately
+
+You can create and manage multiple Burner Wallets as needed, making it easy to test different strategies or play against yourself. When you're done, simply delete the Burner Wallet or create a new one for your next gaming session.
+
 ## Notes
 
 - Ensure all terminals are running in the background to maintain an active environment while you play.
