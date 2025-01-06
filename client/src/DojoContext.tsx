@@ -1,9 +1,5 @@
 import { createContext, ReactNode, useContext, useMemo } from "react";
-// import {
-//     BurnerAccount,
-//     BurnerManager,
-//     useBurnerManager,
-// } from "@dojoengine/create-burner";
+import { BurnerAccount, BurnerManager, useBurnerManager } from "@dojoengine/create-burner";
 import { Account } from "starknet";
 import { dojoConfig } from "../dojoConfig";
 import { DojoProvider } from "@dojoengine/core";
@@ -12,22 +8,20 @@ import { setupWorld } from "./contracts.gen";
 interface DojoContextType {
     masterAccount: Account;
     setupWorld: ReturnType<typeof setupWorld>;
-    // account: BurnerAccount;
+    account: BurnerAccount;
 }
 
 export const DojoContext = createContext<DojoContextType | null>(null);
 
 export const DojoContextProvider = ({
     children,
-    // burnerManager,
+    burnerManager,
 }: {
     children: ReactNode;
-    // burnerManager: BurnerManager;
+    burnerManager: BurnerManager;
 }) => {
     const currentValue = useContext(DojoContext);
-    if (currentValue) {
-        throw new Error("DojoProvider can only be used once");
-    }
+    if (currentValue) throw new Error("DojoProvider can only be used once");
 
     const dojoProvider = new DojoProvider(
         dojoConfig.manifest,
@@ -35,27 +29,26 @@ export const DojoContextProvider = ({
     );
 
     const masterAccount = useMemo(
-        () =>
-            new Account(
-                dojoProvider.provider,
-                dojoConfig.masterAddress,
-                dojoConfig.masterPrivateKey,
-                "1"
-            ),
+        () => new Account(
+            dojoProvider.provider,
+            dojoConfig.masterAddress,
+            dojoConfig.masterPrivateKey,
+            "1"
+        ),
         []
     );
 
-    // const burnerManagerData = useBurnerManager({ burnerManager });
+    const burnerManagerData = useBurnerManager({ burnerManager });
 
     return (
         <DojoContext.Provider
             value={{
                 masterAccount,
                 setupWorld: setupWorld(dojoProvider),
-                // account: {
-                    // ...burnerManagerData,
-                    // account: burnerManagerData.account || masterAccount,
-                // },
+                account: {
+                    ...burnerManagerData,
+                    account: burnerManagerData.account || masterAccount,
+                },
             }}
         >
             {children}

@@ -6,6 +6,7 @@ import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
 import ControllerButton from '../connector/ControllerButton';
+import CreateBurner from "../connector/CreateBurner";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
@@ -23,7 +24,7 @@ export const useDojoStore = createDojoStore<typeof schema>();
 
 function Checker({ }: { sdk: SDK<typeof schema> }) {
   const {
-    // account: { account },
+     account: { account : burner },
     setup: { setupWorld },
   } = useDojo();
 
@@ -41,11 +42,12 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
   const [upPieces, setUpPieces] = useState<PieceUI[]>([]);
   const [downPieces, setDownPieces] = useState<PieceUI[]>([]);
+  const activeAccount = account || burner;
 
     useEffect(() => {
-      if (account?.address) {
+      if (activeAccount?.address) {
         const { initialBlackPieces, initialOrangePieces } = createInitialPieces(
-          account.address
+          activeAccount.address
         );
         setUpPieces(initialBlackPieces);
         setDownPieces(initialOrangePieces);
@@ -363,6 +365,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <ControllerButton />
+        <CreateBurner/>
       </div>
       
       {isGameOver && <GameOver />}

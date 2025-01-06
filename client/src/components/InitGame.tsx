@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
-// import { useDojo } from "../hooks/useDojo.tsx";
+import { useDojo } from "../hooks/useDojo.tsx";
 import ControllerButton from '../connector/ControllerButton';
+import CreateBurner from '../connector/CreateBurner.tsx';
 
 import InitGameBackground from "../assets/InitGameBackground.png";
 import CreateGame from "../assets/CreateGame.png";
@@ -18,16 +19,18 @@ import { useAccount } from '@starknet-react/core';
 export const useDojoStore = createDojoStore<typeof schema>();
 
 function InitGame({ }: { sdk: SDK<typeof schema> }) {
-  // const { account } = useDojo();
-  const {account} = useAccount();
+   const { account: burner } = useDojo();
+   const {account} = useAccount();
   const { getSessionId,createLobby } = useSystemCalls();
   const navigate = useNavigate();
   const [isHoveredCreate, setIsHoveredCreate] = useState(false);
   const [isHoveredJoin, setIsHoveredJoin] = useState(false);
 
+  const activeAccount = account || burner;
+
   const handleCreateGame = async () => {
     try {
-      if (account) {
+      if (activeAccount) {
       const lobby = await createLobby();
       const id = await getSessionId();
       console.log(lobby, "createLobby", id, "id");
@@ -114,14 +117,15 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
+        <CreateBurner/>
         <ControllerButton />
       </div>
 
       {/* Button to create game */}
       <img
         src={isHoveredCreate ? CreateGame2 : CreateGame}
-        alt={account ? "Crear Juego" : "Conectar cuenta"}
-        onClick={account ? handleCreateGame : undefined}
+        alt={account || burner ? "Crear Juego" : "Conectar cuenta"}
+         onClick={account || burner ? handleCreateGame : undefined}
         onMouseEnter={() => setIsHoveredCreate(true)}
         onMouseLeave={() => setIsHoveredCreate(false)}
         style={{
@@ -132,9 +136,9 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
           width: '700px',
           height: 'auto',
           zIndex: 2,
-          cursor: account ? 'pointer' : 'not-allowed',
+           cursor: account || burner ? 'pointer' : 'not-allowed',
           transition: 'transform 0.2s',
-          opacity: account ? 1 : 0.5,
+          opacity: account || burner ? 1 : 0.5,
         }}
       />
 
@@ -152,7 +156,7 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
           width: '700px',
           height: 'auto',
           zIndex: 2,
-          cursor: 'pointer',
+          cursor: account || burner ? 'pointer': '',
           transition: 'transform 0.2s',
         }}
       />

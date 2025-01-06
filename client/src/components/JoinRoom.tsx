@@ -1,35 +1,54 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
+import { useAccount } from "@starknet-react/core";
+import { Account } from "starknet";
+import ControllerButton from "../connector/ControllerButton";
+import CreateBurner from "../connector/CreateBurner";
 
 import LoadingRoom from "../assets/LoadingCreate.png";
 import InitGameBackground from "../assets/InitGameBackground.png";
 import Return from "../assets/Return.png";
 import JoinGameRectangule from "../assets/JoinGameRectangule.png";
 import ConfirmJoin from "../assets/ConfirmJoin.png";
-import { useAccount } from '@starknet-react/core';
-import { Account } from 'starknet';
-import ControllerButton from '../connector/ControllerButton.tsx';
 
-function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
-    const {
-      // account: { account },
-      setup: { setupWorld },
-    } = useDojo();
-    const {account} = useAccount();
+function JoinRoom({}: { sdk: SDK<typeof schema> }) {
+  const {
+    setup: { setupWorld },
+    account: { account: burner },
+  } = useDojo();
+  const { account } = useAccount();
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const activeAccount = account || burner;
+
+  useEffect(() => {
+    if (!activeAccount?.address) {
+      navigate("/");
+    }
+  }, [activeAccount, navigate]);
 
   const joinRoom = async () => {
+    setIsProcessing(true);
+    setError(null);
+
     try {
-      if (account) {
-        await(await setupWorld.actions).joinLobby((account as Account), 0);
-        navigate("/creategame");
-      } else {
-        console.warn("Account not connected");
+      if (!activeAccount?.address) {
+        throw new Error("Account not connected");
       }
+
+      await (await setupWorld.actions).joinLobby(activeAccount as Account, 0);
+      localStorage.setItem("playerAddress", activeAccount.address);
+      navigate("/creategame");
     } catch (error) {
-      console.error("Error creating the game:", error);
+      console.error("Error joining room:", error);
+      setError(error instanceof Error ? error.message : "Failed to join room");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -42,11 +61,9 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
         height: "100vh",
         position: "relative",
         overflow: "hidden",
-      }}>
-
-      {/* Dark background filter */}
+      }}
+    >
       <div
-
         style={{
           position: "absolute",
           top: 0,
@@ -70,7 +87,8 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           border: "none",
           cursor: "pointer",
           zIndex: 2,
-        }}>
+        }}
+      >
         <img
           src={Return}
           alt="Return"
@@ -89,7 +107,9 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           display: "flex",
           gap: "20px",
           zIndex: 2,
-        }}>
+        }}
+      >
+        <CreateBurner />
         <ControllerButton />
       </div>
 
@@ -103,11 +123,11 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           fontSize: "32px",
           fontWeight: "bold",
           zIndex: 5,
-        }}>
+        }}
+      >
         JOIN ROOM
       </div>
 
-      {/* Loading bar */}
       <div
         style={{
           position: "absolute",
@@ -117,10 +137,11 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           width: "1500px",
           height: "10px",
           zIndex: 5,
-        }}>
+        }}
+      >
         <img
           src={LoadingRoom}
-          alt="Cargando"
+          alt="Loading"
           style={{
             width: "100%",
             height: "100%",
@@ -138,11 +159,11 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           fontSize: "24px",
           fontWeight: "bold",
           zIndex: 5,
-        }}>
+        }}
+      >
         Room ID
       </div>
 
-      {/* Rectangule of seccion id */}
       <div
         style={{
           position: "absolute",
@@ -160,12 +181,30 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           fontSize: "24px",
           fontWeight: "bold",
           zIndex: 5,
-        }}>
+        }}
+      >
         0
       </div>
 
+      {error && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "300px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            color: "#ff4444",
+            fontSize: "18px",
+            zIndex: 5,
+          }}
+        >
+          {error}
+        </div>
+      )}
+
       <button
-        onClick={joinRoom} // Actualizado a handleCreateRoom con create_session
+        onClick={joinRoom}
+        disabled={isProcessing || !activeAccount?.address}
         style={{
           position: "absolute",
           bottom: "180px",
@@ -178,11 +217,14 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           color: "white",
           fontSize: "24px",
           fontWeight: "bold",
-          cursor: "pointer",
+          cursor:
+            isProcessing || !activeAccount?.address ? "not-allowed" : "pointer",
           border: "none",
           zIndex: 5,
-        }}>
-        Confirm
+          opacity: isProcessing || !activeAccount?.address ? 0.7 : 1,
+        }}
+      >
+        {isProcessing ? "Processing..." : "Confirm"}
       </button>
     </div>
   );
