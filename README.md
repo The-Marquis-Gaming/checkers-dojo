@@ -23,7 +23,7 @@ Open a terminal and run:
 
 ```bash
 cd dojo-starter
-katana --dev --dev.no-fee --http.cors_origins=*
+katana --dev --dev.no-fee --http.cors_origins "*"
 ```
 
 ### Terminal 2: Build and Migrate the Project
@@ -34,7 +34,7 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins=*
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins "*"
 ```
 
 ### Terminal 3: Start the Client
