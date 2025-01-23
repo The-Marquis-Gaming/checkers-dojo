@@ -11,7 +11,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.9](https://book.dojoengine.org/)**
+- **[Dojo v1.0.12](https://book.dojoengine.org/)**
 
 ---
 
