@@ -34,7 +34,11 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins "*"
+## chose you torii by which type of world you want to connect
+# torii for Burner 
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins "*" --rpc http://127.0.0.1:5050
+# torii for controller 
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins "*" --rpc  https://api.cartridge.gg/x/checkers-scaffold-1/katana
 ```
 
 ### Terminal 3: Start the Client
