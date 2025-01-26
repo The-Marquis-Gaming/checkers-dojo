@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SDK, createDojoStore } from "@dojoengine/sdk";
+import { SDK } from "@dojoengine/sdk";
+import { createDojoStore } from '@dojoengine/sdk/state';
 import { schema } from "../bindings.ts";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
