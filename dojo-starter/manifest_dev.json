@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x4614ca321ed8f17e86746bdc05906b36e3b57a6eb682ca8807e5f21d476581a",
-      "class_hash": "0x59b5ec0cf3f7761b1c5dad4fffd78576375e3db5ec91c49b96febbf2540f7c0",
+      "address": "0x50250faf40cba04ea20c61ce22e98bcde324399c231e98520cf1205563fba9a",
+      "class_hash": "0x320cb4dfe20db60f8670289c819e6506857c32bbfce9fff2c51ca27ad9e8fdc",
       "abi": [
         {
           "type": "impl",
@@ -1312,7 +1312,7 @@
         },
         {
           "type": "enum",
-          "name": "dojo_starter::models::Position",
+          "name": "dojo_starter::models::position::Position",
           "variants": [
             {
               "name": "None",
@@ -1330,7 +1330,7 @@
         },
         {
           "type": "struct",
-          "name": "dojo_starter::models::Coordinates",
+          "name": "dojo_starter::models::coordinates::Coordinates",
           "members": [
             {
               "name": "row",
@@ -1358,7 +1358,7 @@
         },
         {
           "type": "struct",
-          "name": "dojo_starter::models::Piece",
+          "name": "dojo_starter::models::piece::Piece",
           "members": [
             {
               "name": "session_id",
@@ -1378,7 +1378,7 @@
             },
             {
               "name": "position",
-              "type": "dojo_starter::models::Position"
+              "type": "dojo_starter::models::position::Position"
             },
             {
               "name": "is_king",
@@ -1423,11 +1423,11 @@
               "inputs": [
                 {
                   "name": "position",
-                  "type": "dojo_starter::models::Position"
+                  "type": "dojo_starter::models::position::Position"
                 },
                 {
                   "name": "coordinates_position",
-                  "type": "dojo_starter::models::Coordinates"
+                  "type": "dojo_starter::models::coordinates::Coordinates"
                 },
                 {
                   "name": "session_id",
@@ -1447,11 +1447,11 @@
               "inputs": [
                 {
                   "name": "current_piece",
-                  "type": "dojo_starter::models::Piece"
+                  "type": "dojo_starter::models::piece::Piece"
                 },
                 {
                   "name": "new_coordinates_position",
-                  "type": "dojo_starter::models::Coordinates"
+                  "type": "dojo_starter::models::coordinates::Coordinates"
                 }
               ],
               "outputs": [],
@@ -1600,25 +1600,25 @@
   "models": [
     {
       "members": [],
-      "class_hash": "0xe31ccd18f7e4cd23331d28652d4d782f1969801654f44b44aea937a08ba3ab",
+      "class_hash": "0x158208ab1ff0fb8115a8649347b5ec4403f8dd49ee06c3776a42166be5711",
       "tag": "checkers_marq-Counter",
       "selector": "0x58fbb905c11c60fb359a2012575d26bd1da7d16f8775c066d23f665d7b1fbe3"
     },
     {
       "members": [],
-      "class_hash": "0x1b7d72bb6fa61e7511359a9158437884c5225d7d813e5cf9d5b4b7f335d26c5",
+      "class_hash": "0x8306b1ae53d6c09d9abddbd0bfc14741bb0e728ac821b6e69cc72ebd06dbe3",
       "tag": "checkers_marq-Piece",
       "selector": "0x684b0dd75d771ee67cf09e13f0822c860313d23edb1fb9207ac61f5822b6281"
     },
     {
       "members": [],
-      "class_hash": "0x62d90fbf8c8ffdfa9d8e05ef0a30c72f825880e5ecc7f36d21b11a97e1c7e3c",
+      "class_hash": "0x856afc71f9198c0ea2140dd7036e0348b178a0e90956420e8e7c21290b7789",
       "tag": "checkers_marq-Player",
       "selector": "0x7437f82acef55f3c71c431fa4eaedb3639cfdc8d86953af84e64133a2f0e33b"
     },
     {
       "members": [],
-      "class_hash": "0x2fc9a4dbb05d6b8d07055cc5d5dfffec30a6b17cab66613592a56314e90c871",
+      "class_hash": "0x50c5a2bce0f4fa4c176ffbdde0c74fc327efd14c604c139bf76353bbba1c76b",
       "tag": "checkers_marq-Session",
       "selector": "0x6b65a7b98a8c0ec4f80e8816a1131c45b1d39df14c80f85e411a3d648789c06"
     }
@@ -1644,7 +1644,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x7c99235c7bfde918e90a8276024a498a13a711a1e1695244f66c3e502e26770",
+      "class_hash": "0x69f996483517268e81ea064783cabc885f3e4d941e8f4d33d06ca0ef3a065d",
       "tag": "checkers_marq-Winner",
       "selector": "0x67314c21985a92d4efcca0415c1a81268e3bc6909282d5897bed9852bd3b48"
     }

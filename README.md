@@ -11,7 +11,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.9](https://book.dojoengine.org/)**
+- **[Dojo v1.0.12](https://book.dojoengine.org/)**
 
 ---
 
@@ -23,7 +23,7 @@ Open a terminal and run:
 
 ```bash
 cd dojo-starter
-katana --dev --dev.no-fee --http.cors_origins=*
+katana --dev --dev.no-fee --http.cors_origins "*"
 ```
 
 ### Terminal 2: Build and Migrate the Project
@@ -34,7 +34,12 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins=*
+## chose you torii by which type of world you want to connect
+# torii for Burner 
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins "*" --rpc http://127.0.0.1:5050
+# torii for controller 
+torii --world 0x01dfabd3b24f954fff521af09a053f718b4255e4cc37ceaa5137bce73854d8ca --http.cors_origins "*" --rpc  https://api.cartridge.gg/x/checkers-scaffold-1/katana
+
 ```
 
 ### Terminal 3: Start the Client

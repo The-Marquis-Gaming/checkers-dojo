@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { SDK, createDojoStore } from "@dojoengine/sdk";
+import {SDK} from "@dojoengine/sdk";
+import { createDojoStore } from '@dojoengine/sdk/state';
 import { schema, Position } from "../bindings";
 import { useDojo } from "../hooks/useDojo";
 import GameOver from "../components/GameOver";
